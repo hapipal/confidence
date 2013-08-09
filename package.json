@@ -1,0 +1,35 @@
+{
+  "name": "con",
+  "description": "Configuration API",
+  "version": "0.0.0",
+  "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
+  "repository": "git://github.com/spumko/con",
+  "main": "index",
+  "keywords": [
+    "hapi",
+    "plugin",
+    "configuration",
+    "api"
+  ],
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+  },
+  "peerDependencies": {
+    "hapi": "1.x.x"
+  },
+  "devDependencies": {
+    "hapi": "1.x.x",
+    "lab": "0.x.x"
+  },
+  "scripts": {
+    "test": "make test-cov"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/spumko/com/raw/master/LICENSE"
+    }
+  ]
+}
