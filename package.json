@@ -1,9 +1,9 @@
 {
-  "name": "con",
+  "name": "confidence",
   "description": "Configuration API",
   "version": "0.0.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
-  "repository": "git://github.com/spumko/con",
+  "repository": "git://github.com/spumko/confidence",
   "main": "index",
   "keywords": [
     "hapi",
@@ -29,7 +29,7 @@
   "licenses": [
     {
       "type": "BSD",
-      "url": "http://github.com/spumko/com/raw/master/LICENSE"
+      "url": "http://github.com/spumko/confidence/raw/master/LICENSE"
     }
   ]
 }
