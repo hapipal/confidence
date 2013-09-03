@@ -173,6 +173,21 @@ describe('Confidence', function () {
                     });
                 });
             });
+
+            it('errors on invalid node modification', function (done) {
+
+                var store = new Store();
+                store.write('/', { key1: 1, key2: 2 }, function (err) {
+
+                    expect(err).to.not.exist;
+
+                    store.write('/$default', 3, function (err) {
+
+                        expect(err.message).to.equal('Cannot add default value to a node without a filter');
+                        done();
+                    });
+                });
+            });
         });
 
         describe('#load', function () {
