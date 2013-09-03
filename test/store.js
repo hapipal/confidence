@@ -93,5 +93,124 @@ describe('Confidence', function () {
         read('/key2/$default/$filter', 'platform');
         read('/key3/sub2', { $filter: 'xfactor', yes: 6 });
         read('/key4', null);
+
+        describe('#load', function () {
+
+            it('fails on invalid tree', function (done) {
+
+                var store = new Store();
+                var err = store.load(null);
+                expect(err.message).to.equal('Node cannot be null or undefined');
+                expect(err.path).to.equal('/');
+                done();
+            });
+        });
+
+        describe('#validate', function () {
+
+            it('fails on null node', function (done) {
+
+                var err = Store.validate(null);
+                expect(err.message).to.equal('Node cannot be null or undefined');
+                expect(err.path).to.equal('/');
+                done();
+            });
+
+            it('fails on array node', function (done) {
+
+                var err = Store.validate({ key: [] });
+                expect(err.message).to.equal('Invalid node object type');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on empty object node', function (done) {
+
+                var err = Store.validate({ key: {} });
+                expect(err.message).to.equal('Node cannot be empty');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on empty filter', function (done) {
+
+                var err = Store.validate({ key: { $filter: '' } });
+                expect(err.message).to.equal('Invalid empty filter value');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on non-string filter', function (done) {
+
+                var err = Store.validate({ key: { $filter: 3 } });
+                expect(err.message).to.equal('Filter value must be a string');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on invalid filter', function (done) {
+
+                var err = Store.validate({ key: { $filter: '4$' } });
+                expect(err.message).to.equal('Invalid filter value 4$');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on invalid default', function (done) {
+
+                var err = Store.validate({ key: { $default: null } });
+                expect(err.message).to.equal('Node cannot be null or undefined');
+                expect(err.path).to.equal('/key/$default');
+                done();
+            });
+
+            it('fails on unknown directive', function (done) {
+
+                var err = Store.validate({ key: { $unknown: 'asd' } });
+                expect(err.message).to.equal('Unknown $ directive $unknown');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on invalid child key', function (done) {
+
+                var err = Store.validate({ key: { 'sub key': 'abc' } });
+                expect(err.message).to.equal('Invalid key string sub key');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on invalid child node', function (done) {
+
+                var err = Store.validate({ key: { sub: null } });
+                expect(err.message).to.equal('Node cannot be null or undefined');
+                expect(err.path).to.equal('/key/sub');
+                done();
+            });
+
+            it('fails on default value without a filter', function (done) {
+
+                var err = Store.validate({ key: { $default: 1 } });
+                expect(err.message).to.equal('Default value without a filter');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on filter without any value', function (done) {
+
+                var err = Store.validate({ key: { $filter: '1' } });
+                expect(err.message).to.equal('Filter without any values');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on filter with only default', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $default: 1 } });
+                expect(err.message).to.equal('Filter with only a default');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+        });
     });
 });
