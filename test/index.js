@@ -35,7 +35,7 @@ describe('Confidence', function () {
                     },
                     $default: {
                         $filter: 'platform',
-                        ios: 1,
+                        ios: 'iphone',
                         $default: 2
                     }
                 },
@@ -58,21 +58,104 @@ describe('Confidence', function () {
             });
         });
 
-        it('issues id', function (done) {
+        it('executes client flow', function (done) {
 
-            server.inject({ method: 'POST', url: '/id', payload: {} }, function (res) {
+            server.inject({ method: 'POST', url: '/id', payload: { criteria: { platform: 'ios' } } }, function (res) {
 
                 expect(res.statusCode).to.equal(200);
-                done();
+
+                server.inject('/key/' + res.payload + '/key2', function (res) {
+
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.payload).to.equal('iphone');
+                    done();
+                });
             });
         });
 
-        it('gets key', function (done) {
+        describe('/id', function () {
 
-            server.inject('/key/12345/key1', function (res) {
+            it('errors on invalid criteria key', function (done) {
 
-                expect(res.statusCode).to.equal(200);
-                done();
+                server.inject({ method: 'POST', url: '/id', payload: { criteria: { $key: 'value' } } }, function (res) {
+
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.result.message).to.equal('Invalid criteria key &#x24;key');
+                    done();
+                });
+            });
+
+            it('errors on invalid criteria value', function (done) {
+
+                server.inject({ method: 'POST', url: '/id', payload: { criteria: { key1: '$value' } } }, function (res) {
+
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.result.message).to.equal('Invalid criteria value for key1');
+                    done();
+                });
+            });
+
+            it('errors on nested criteria value', function (done) {
+
+                server.inject({ method: 'POST', url: '/id', payload: { criteria: { key1: { a: 1 } } } }, function (res) {
+
+                    expect(res.statusCode).to.equal(400);
+                    expect(res.result.message).to.equal('Non-String criteria value for key1');
+                    done();
+                });
+            });
+        });
+
+        describe('/key', function () {
+
+            it('errors on unknown client id', function (done) {
+
+                server.inject('/key/unknown/key2', function (res) {
+
+                    expect(res.statusCode).to.equal(404);
+                    done();
+                });
+            });
+
+            it('errors on unknown key', function (done) {
+
+                server.inject({ method: 'POST', url: '/id', payload: { criteria: { platform: 'ios' } } }, function (res) {
+
+                    expect(res.statusCode).to.equal(200);
+
+                    server.inject('/key/' + res.payload + '/key4', function (res) {
+
+                        expect(res.statusCode).to.equal(404);
+                        done();
+                    });
+                });
+            });
+
+            it('errors on bad key', function (done) {
+
+                server.inject({ method: 'POST', url: '/id', payload: { criteria: { platform: 'ios' } } }, function (res) {
+
+                    expect(res.statusCode).to.equal(200);
+
+                    server.inject('/key/' + res.payload + '/$key', function (res) {
+
+                        expect(res.statusCode).to.equal(400);
+                        done();
+                    });
+                });
+            });
+        });
+
+        describe('/combo', function () {
+
+            it('requests id and key', function (done) {
+
+                server.inject({ method: 'POST', url: '/combo/key2', payload: { criteria: { platform: 'ios' } } }, function (res) {
+
+                    expect(res.statusCode).to.equal(200);
+                    expect(res.result.value).to.deep.equal('iphone');
+                    done();
+                });
             });
         });
 
