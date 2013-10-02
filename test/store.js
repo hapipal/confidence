@@ -48,6 +48,15 @@ describe('Confidence', function () {
                     $filter: 'xfactor',
                     yes: 6                      // Value
                 }
+            },
+            ab: {
+                // Range
+                $filter: 'group1',
+                $range: [
+                    { limit: 10, value: 4 },
+                    { limit: 20, value: 5 }
+                ],
+                $default: 6
             }
         };
 
@@ -75,119 +84,15 @@ describe('Confidence', function () {
             get('/key2/deeper', 'value', { env: 'production' });
             get('/key2/deeper', null, { env: 'qa' });
             get('/key2/deeper', null);
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 } });
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 } }, { xfactor: 'yes' });
-            get('/', { key1: 'abc', key2: 2, key3: {} }, null, 1);
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 } }, null, 2);
-        });
-
-        describe('#read', function () {
-
-            var store = new Store();
-            store.load(tree);
-
-            var read = function (key, result) {
-
-                it('reads value for ' + key, function (done) {
-
-                    store.read(key, function (err, value) {
-
-                        expect(value).to.deep.equal(result);
-                        done();
-                    });
-                });
-            };
-
-            read('key1', undefined);
-            read('/', tree);
-            read('/key1', 'abc');
-            read('/key2/production/deeper', 'value');
-            read('/key2/$default/$filter', 'platform');
-            read('/key3/sub2', { $filter: 'xfactor', yes: 6 });
-            read('/key4', null);
-        });
-
-        describe('#write', function () {
-
-            it('writes root node', function (done) {
-
-                var store = new Store();
-                store.write('/', { key1: 1, key2: 2 }, function (err) {
-
-                    expect(err).to.not.exist;
-                    done();
-                });
-            });
-
-            it('errors on invalid node', function (done) {
-
-                var store = new Store();
-                store.write('/', null, function (err) {
-
-                    expect(err.message).to.equal('Node cannot be null or undefined');
-                    done();
-                });
-            });
-
-            it('errors on invalid key', function (done) {
-
-                var store = new Store();
-                store.write('/$a', 'value', function (err) {
-
-                    expect(err.message).to.equal('Bad key segment: /$a');
-                    done();
-                });
-            });
-
-            it('errors on missing key path', function (done) {
-
-                var store = new Store();
-                store.write('/a/b', 'value', function (err) {
-
-                    expect(err.message).to.equal('Key path does not exist');
-                    done();
-                });
-            });
-
-            it('adds node', function (done) {
-
-                var store = new Store();
-                store.write('/', { key1: 1, key2: 2 }, function (err) {
-
-                    expect(err).to.not.exist;
-
-                    store.read('/key2', function (err, value) {
-
-                        expect(err).to.not.exist;
-                        expect(value).to.equal(2);
-
-                        store.write('/key3', { $filter: 'x', a: 1, $default: 2 }, function (err) {
-
-                            expect(err).to.not.exist;
-                            store.get('/key3', { x: 'a' }, 1, function (err, value) {
-
-                                expect(value).to.deep.equal(1);
-                                done();
-                            });
-                        });
-                    });
-                });
-            });
-
-            it('errors on invalid node modification', function (done) {
-
-                var store = new Store();
-                store.write('/', { key1: 1, key2: 2 }, function (err) {
-
-                    expect(err).to.not.exist;
-
-                    store.write('/$default', 3, function (err) {
-
-                        expect(err.message).to.equal('Cannot add default value to a node without a filter');
-                        done();
-                    });
-                });
-            });
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 });
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, ab: 6 }, { xfactor: 'yes' });
+            get('/', { key1: 'abc', key2: 2, key3: {}, ab: 6 }, null, 1);
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 }, null, 2);
+            get('/ab', 4, { group1: 9 });
+            get('/ab', 4, { group1: 10 });
+            get('/ab', 5, { group1: 11 });
+            get('/ab', 5, { group1: 19 });
+            get('/ab', 6, { group1: 29 });
         });
 
         describe('#load', function () {
@@ -304,6 +209,78 @@ describe('Confidence', function () {
 
                 var err = Store.validate({ key: { $filter: 'a', $default: 1 } });
                 expect(err.message).to.equal('Filter with only a default');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on non-array range', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: {}, $default: 1 } });
+                expect(err.message).to.equal('Range value must be an array');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on empty array range', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [], $default: 1 } });
+                expect(err.message).to.equal('Range must include at least one value');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on non-object range array element', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [5], $default: 1 } });
+                expect(err.message).to.equal('Invalid range entry type');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on range array element missing limit', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [{}], $default: 1 } });
+                expect(err.message).to.equal('Range entry missing limit');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on out of order range array elements', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [{ limit: 11, value: 2 }, { limit: 10, value: 6 }], $default: 1 } });
+                expect(err.message).to.equal('Range entries not sorted in ascending order - 10 cannot come after 11');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on range array element missing value', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [{ limit: 1 }], $default: 1 } });
+                expect(err.message).to.equal('Range entry missing value');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on range array element with invalid value', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: null }], $default: 1 } });
+                expect(err.message).to.equal('Node cannot be null or undefined');
+                expect(err.path).to.equal('/key/$range[1]');
+                done();
+            });
+
+            it('fails on range without a filter', function (done) {
+
+                var err = Store.validate({ key: { $range: [{ limit: 1, value: 1 }] } });
+                expect(err.message).to.equal('Range without a filter');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on range with non-ranged values', function (done) {
+
+                var err = Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: 1 }], a: 1 } });
+                expect(err.message).to.equal('Range with non-ranged values');
                 expect(err.path).to.equal('/key');
                 done();
             });
