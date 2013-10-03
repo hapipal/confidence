@@ -7,7 +7,7 @@ work with any existing JSON-based configuration, serving values based on object 
 
 [![Build Status](https://secure.travis-ci.org/spumko/confidence.png)](http://travis-ci.org/spumko/confidence)
 
-## Example
+# Example
 
 ```json
 {
@@ -84,6 +84,59 @@ The result is:
 }
 ```
 
+# API
 
+## Confidence.Store
 
+The configuration parser used to load the configuration document and apply criteria to get values based on keys.
+
+### new Store()
+
+Creates an empty configuration storage container.
+
+```javascript
+var Confidence = require('confidence');
+
+var store = new Store();
+```
+
+### store.load(document)
+
+Validates the provided configuration, clears any existing configuration, then loads the configuration where:
+
+- `document` - an object containing a **confidence** configuration object generated from a parsed JSON document.
+
+```javascript
+var document = {
+    a: 1,
+    b: 2,
+    c: {
+        $filter: 'size',
+        big: 100,
+        small: 1,
+        $default: 50
+    }
+};
+
+store.load(document);
+```
+
+### store.get(key, [criteria,] [depth,] next)
+
+Retrieves a value from the configuration document after applying the provided criteria where:
+
+- `key` - the requested key path. All keys must begin with '/'. '/' returns the the entire document.
+- `criteria` - optional object used as criteria for applying filters in the configuration document. Defaults to `{}`.
+- `depth` - optional number used to determine how deep the resulting tree is. Defaults to full depth.
+- `next` - required callback with the signature `function(err, value)` where:
+    - `err` - error value if the request failed.
+    - `value` - the configuration value found at the requested key. If key not found, returns `null` without an `err`.
+
+Note that the `next()` callback is called on the same tick.
+
+```javascript
+store.get('/c', { size: 'big' }, function(err, value) {
+    // Check err, use value
+});
+```
 

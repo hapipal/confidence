@@ -1,7 +1,7 @@
 {
   "name": "confidence",
   "description": "Configuration API",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "repository": "git://github.com/spumko/confidence",
   "main": "index",

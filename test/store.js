@@ -68,15 +68,15 @@ describe('Confidence', function () {
 
                 it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), function (done) {
 
-                    store.get(key, criteria || {}, depth, function (err, value) {
+                    store.get(key, criteria, depth, function (err, value) {
 
+                        expect(err).to.not.exist;
                         expect(value).to.deep.equal(result);
                         done();
                     });
                 });
             };
 
-            get('key', undefined);
             get('/key1', 'abc');
             get('/key2', 2);
             get('/key2', 1, { platform: 'ios' });
@@ -92,6 +92,43 @@ describe('Confidence', function () {
             get('/ab', 5, { random: { 1: 11 } });
             get('/ab', 5, { random: { 1: 19 } });
             get('/ab', 6, { random: { 1: 29 } });
+            
+            it('fails on invalid key', function (done) {
+               
+                store.get('key', function (err, value) {
+                   
+                    expect(err).to.exist;
+                    expect(err.message).to.equal('Bad key segment: key');
+                    done();
+                });
+            });
+            
+            it('accepts 2 arguments', function (done) {
+               
+                store.get('/key1', function (err, value) {
+                   
+                    expect(value).to.equal('abc');
+                    done();
+                });
+            });
+            
+            it('accepts 3 arguments with criteria', function (done) {
+               
+                store.get('/key1', {}, function (err, value) {
+                   
+                    expect(value).to.equal('abc');
+                    done();
+                });
+            });
+            
+            it('accepts 3 arguments with depth', function (done) {
+           
+                store.get('/', 2, function (err, value) {
+               
+                    expect(value).to.deep.equal({ key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 });
+                    done();
+                });
+            });
         });
 
         describe('#load', function () {

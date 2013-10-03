@@ -45,21 +45,20 @@ describe('Confidence', function () {
 
             var id = 'a44f476c-1326-499e-9cf9-2111c31670d8';
             var criteria = Confidence.id.criteria(id);
-            expect(criteria.$random).to.equal('21672351470680');
-            expect(criteria.random1).to.equal(21);
-            expect(criteria.random2).to.equal(16);
-            expect(criteria.random3).to.equal(67);
-            expect(criteria.random4).to.equal(72);
-            expect(criteria.random5).to.equal(23);
-            expect(criteria.random6).to.equal(35);
-            expect(criteria.random7).to.equal(51);
-            expect(criteria.random8).to.equal(14);
-            expect(criteria.random9).to.equal(47);
-            expect(criteria.random10).to.equal(70);
-            expect(criteria.random11).to.equal(6);
-            expect(criteria.random12).to.equal(68);
-            expect(criteria.random13).to.equal(80);
-            expect(criteria.random14).to.equal(2);
+            expect(criteria.random.a).to.equal(21);
+            expect(criteria.random.b).to.equal(16);
+            expect(criteria.random.c).to.equal(67);
+            expect(criteria.random.d).to.equal(72);
+            expect(criteria.random.e).to.equal(23);
+            expect(criteria.random.f).to.equal(35);
+            expect(criteria.random.g).to.equal(51);
+            expect(criteria.random.h).to.equal(14);
+            expect(criteria.random.i).to.equal(47);
+            expect(criteria.random.j).to.equal(70);
+            expect(criteria.random.k).to.equal(6);
+            expect(criteria.random.l).to.equal(68);
+            expect(criteria.random.m).to.equal(80);
+            expect(criteria.random.n).to.equal(2);
             done();
         });
 
