@@ -106,22 +106,14 @@ describe('Confidence', function () {
                 var store = new Confidence.Store();
                 expect(function () {
 
-                    var err = store.load(null);
-                }).to.throw('Node cannot be null or undefined');
+                    var err = store.load({ $b: 3 });
+                }).to.throw('Unknown $ directive $b');
 
                 done();
             });
         });
 
         describe('#validate', function () {
-
-            it('fails on null node', function (done) {
-
-                var err = Confidence.Store.validate(null);
-                expect(err.message).to.equal('Node cannot be null or undefined');
-                expect(err.path).to.equal('/');
-                done();
-            });
 
             it('fails on Error node', function (done) {
 
@@ -157,8 +149,8 @@ describe('Confidence', function () {
 
             it('fails on invalid default', function (done) {
 
-                var err = Confidence.Store.validate({ key: { $default: null } });
-                expect(err.message).to.equal('Node cannot be null or undefined');
+                var err = Confidence.Store.validate({ key: { $default: { $b: 5 } } });
+                expect(err.message).to.equal('Unknown $ directive $b');
                 expect(err.path).to.equal('/key/$default');
                 done();
             });
@@ -173,8 +165,8 @@ describe('Confidence', function () {
 
             it('fails on invalid child node', function (done) {
 
-                var err = Confidence.Store.validate({ key: { sub: null } });
-                expect(err.message).to.equal('Node cannot be null or undefined');
+                var err = Confidence.Store.validate({ key: { sub: { $b: 5 } } });
+                expect(err.message).to.equal('Unknown $ directive $b');
                 expect(err.path).to.equal('/key/sub');
                 done();
             });
@@ -261,8 +253,8 @@ describe('Confidence', function () {
 
             it('fails on range array element with invalid value', function (done) {
 
-                var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: null }], $default: 1 } });
-                expect(err.message).to.equal('Node cannot be null or undefined');
+                var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: { $b: 5 } }], $default: 1 } });
+                expect(err.message).to.equal('Unknown $ directive $b');
                 expect(err.path).to.equal('/key/$range[1]');
                 done();
             });

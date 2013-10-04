@@ -98,8 +98,7 @@ The result is:
 ### Basic structure
 
 The configuration document starts with a simple object. key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
-for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans) as well as arrays. Values cannot be
-`null` or `undefined`.
+for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans) as well as arrays.
 
 ```json
 {
