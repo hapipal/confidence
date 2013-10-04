@@ -1,7 +1,6 @@
 // Load modules
 
 var Lab = require('lab');
-var Hapi = require('hapi');
 var Confidence = require('../');
 
 
