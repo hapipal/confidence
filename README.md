@@ -232,13 +232,12 @@ var document = {
 store.load(document);
 ```
 
-### store.get(key, [criteria,] [depth])
+### store.get(key, [criteria])
 
 Retrieves a value from the configuration document after applying the provided criteria where:
 
 - `key` - the requested key path. All keys must begin with '/'. '/' returns the the entire document.
 - `criteria` - optional object used as criteria for applying filters in the configuration document. Defaults to `{}`.
-- `depth` - optional number used to determine how deep the resulting tree is. Defaults to full depth.
 
 Returns the value found after applying the criteria. If the key is invalid or not found, returns null.
 

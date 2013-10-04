@@ -48,7 +48,7 @@ describe('Confidence', function () {
                     yes: 6                      // Value
                 }
             },
-            key4: [12, 13, 14],
+            key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
             key5: {},
             ab: {
                 // Range
@@ -66,11 +66,11 @@ describe('Confidence', function () {
             var store = new Confidence.Store();
             store.load(tree);
 
-            var get = function (key, result, criteria, depth) {
+            var get = function (key, result, criteria) {
 
                 it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), function (done) {
 
-                    var value = store.get(key, criteria, depth);
+                    var value = store.get(key, criteria);
                     expect(value).to.deep.equal(result);
                     done();
                 });
@@ -83,11 +83,8 @@ describe('Confidence', function () {
             get('/key2/deeper', null, { env: 'qa' });
             get('/key2/deeper', null);
             get('/key5', {});
-            get('/key5', {}, null, 5);
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 });
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
-            get('/', { key1: 'abc', key2: 2, key3: {}, key4: [12, 13, 14], key5: {}, ab: 6 }, null, 1);
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 }, null, 2);
             get('/ab', 4, { random: { 1: 9 } });
             get('/ab', 4, { random: { 1: 10 } });
             get('/ab', 5, { random: { 1: 11 } });
@@ -98,27 +95,6 @@ describe('Confidence', function () {
 
                 var value = store.get('key');
                 expect(value).to.equal(null);
-                done();
-            });
-
-            it('accepts 1 arguments', function (done) {
-
-                var value = store.get('/key1');
-                expect(value).to.equal('abc');
-                done();
-            });
-
-            it('accepts 2 arguments with criteria', function (done) {
-
-                var value = store.get('/key1', {});
-                expect(value).to.equal('abc');
-                done();
-            });
-
-            it('accepts 2 arguments with depth', function (done) {
-
-                var value = store.get('/', 2);
-                expect(value).to.deep.equal({ key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 });
                 done();
             });
         });
