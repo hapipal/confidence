@@ -80,8 +80,8 @@ describe('Confidence', function () {
             get('/key2', 2);
             get('/key2', 1, { platform: 'ios' });
             get('/key2/deeper', 'value', { env: 'production' });
-            get('/key2/deeper', null, { env: 'qa' });
-            get('/key2/deeper', null);
+            get('/key2/deeper', undefined, { env: 'qa' });
+            get('/key2/deeper', undefined);
             get('/key5', {});
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 });
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
@@ -94,7 +94,7 @@ describe('Confidence', function () {
             it('fails on invalid key', function (done) {
 
                 var value = store.get('key');
-                expect(value).to.equal(null);
+                expect(value).to.equal(undefined);
                 done();
             });
         });
