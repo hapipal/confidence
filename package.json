@@ -1,7 +1,7 @@
 {
   "name": "confidence",
   "description": "Configuration API",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "repository": "git://github.com/spumko/confidence",
   "main": "index",
@@ -18,11 +18,7 @@
     "hoek": "1.x.x",
     "boom": "1.x.x"
   },
-  "peerDependencies": {
-    "hapi": "1.x.x"
-  },
   "devDependencies": {
-    "hapi": "1.x.x",
     "lab": "0.x.x"
   },
   "scripts": {
