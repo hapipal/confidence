@@ -2,10 +2,17 @@
 ![confidence Logo](https://raw.github.com/spumko/con/master/images/confidence.png)
 
 **Confidence** is a configuration document format, an API, and a foundation for A/B testing. The configuration format is designed to
-work with any existing JSON-based configuration, serving values based on object path ('/a/b/c' translates to `a.b.c`). In addition,
+work with any existing JSON-based configuration, serving values based on object path (`'/a/b/c'` translates to ``a.b.c``). In addition,
 **confidence** defines special $-prefixed keys used to filter values for a given criteria.
 
 [![Build Status](https://secure.travis-ci.org/spumko/confidence.png)](http://travis-ci.org/spumko/confidence)
+
+- [Example](#example)
+- [Document Format](#document-format)
+    - [Basic Structure](#basic-structure)
+    - [Filters](#filters)
+    - [Ranges](#ranges)
+- [API](#api)
 
 # Example
 
@@ -32,7 +39,7 @@ work with any existing JSON-based configuration, serving values based on object 
         }
     },
     "ab": {
-        "$filter": "random.1",
+        "$filter": "random.a",
         "$range": [
             { "limit": 10, "value": 4 },
             { "limit": 20, "value": 5 }
@@ -83,6 +90,106 @@ The result is:
     "ab": 5
 }
 ```
+
+# Document Format
+
+**Confidence** builds on top of a Javascript object as its document.
+
+### Basic structure
+
+The configuration document starts with a simple object. key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
+for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans). Values cannot be
+`null` or `undefined`.
+
+```json
+{
+    "key1": "abc",
+    "key2": 2
+}
+```
+
+Keys can have children:
+
+```json
+{
+    "key1": "abc",
+    "key2": 2,
+    "key3": {
+        "sub1": 123
+    }
+}
+```
+
+### Filters
+
+A key can have multiple values based on a filter. The filter is a key provided in a criteria object as the time of retrieval. Filter names can only
+contain alphanumeric characters and '_'.
+
+```json
+{
+    "key1": "abc",
+    "key2": {
+        "$filter": "env",
+        "production": 1
+    }
+}
+```
+
+When asking for `'/key2'`, if no criteria set is provided or the criteria set does not include a value for the `'env'` filter, no value is available. Only when a criteria
+set with a key `'env'` and value `'production'` is provided, the value returned is `1`.
+
+Filtes can point to a nested value using '.' seperated tokens for accessing child values within the criteria object.
+
+```json
+{
+    "key1": "abc",
+    "key2": {
+        "$filter": "system.env",
+        "production": 1
+    }
+}
+```
+
+Filter can have a default value which will be used is the provided criteria set does not include a value of the filter or if the value does not match.
+
+```json
+{
+    "key1": "abc",
+    "key2": {
+        "$filter": "system.env",
+        "production": 1,
+        "$default": 2
+    }
+}
+```
+
+### Ranges
+
+Ranges provide a way to filter a value based on numerical buckets. The criteria value must be an integer and it matched against the highest bucket limit it can fit.
+
+
+```json
+{
+    "key1": "abc",
+    "key2": {
+        "$filter": "system.env",
+        "production": 1,
+        "$default": 2
+    },
+    "key3": {
+        "$filter": "random.a",
+        "$range": [
+            { "limit": 10, "value": 4 },
+            { "limit": 20, "value": 5 }
+        ],
+        "$default": 6
+    }
+}
+```
+
+If the criteria includes a value for `random.a`, that value is matched against the sorted range entries. The criterion value will match the entry with highest limit it
+is still less than or equal the limit of. For example, a criterion value of `5` will return a key value for `'/key3'` of `4`. A criterion value of `15` will return a
+key value for `'/key3'` of `5`, and a criterion value of `50` will return a key value for `'/key3'` of `6`.
 
 # API
 
