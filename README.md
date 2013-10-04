@@ -238,7 +238,7 @@ Retrieves a value from the configuration document after applying the provided cr
 - `key` - the requested key path. All keys must begin with '/'. '/' returns the the entire document.
 - `criteria` - optional object used as criteria for applying filters in the configuration document. Defaults to `{}`.
 
-Returns the value found after applying the criteria. If the key is invalid or not found, returns null.
+Returns the value found after applying the criteria. If the key is invalid or not found, returns undefined.
 
 ```javascript
 var value = store.get('/c', { size: 'big' });
