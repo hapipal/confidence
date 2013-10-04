@@ -48,6 +48,8 @@ describe('Confidence', function () {
                     yes: 6                      // Value
                 }
             },
+            key4: [12, 13, 14],
+            key5: {},
             ab: {
                 // Range
                 $filter: 'random.1',
@@ -68,12 +70,9 @@ describe('Confidence', function () {
 
                 it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), function (done) {
 
-                    store.get(key, criteria, depth, function (err, value) {
-
-                        expect(err).to.not.exist;
-                        expect(value).to.deep.equal(result);
-                        done();
-                    });
+                    var value = store.get(key, criteria, depth);
+                    expect(value).to.deep.equal(result);
+                    done();
                 });
             };
 
@@ -83,51 +82,44 @@ describe('Confidence', function () {
             get('/key2/deeper', 'value', { env: 'production' });
             get('/key2/deeper', null, { env: 'qa' });
             get('/key2/deeper', null);
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 });
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, ab: 6 }, { xfactor: 'yes' });
-            get('/', { key1: 'abc', key2: 2, key3: {}, ab: 6 }, null, 1);
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 }, null, 2);
+            get('/key5', {});
+            get('/key5', {}, null, 5);
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 });
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
+            get('/', { key1: 'abc', key2: 2, key3: {}, key4: [12, 13, 14], key5: {}, ab: 6 }, null, 1);
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 }, null, 2);
             get('/ab', 4, { random: { 1: 9 } });
             get('/ab', 4, { random: { 1: 10 } });
             get('/ab', 5, { random: { 1: 11 } });
             get('/ab', 5, { random: { 1: 19 } });
             get('/ab', 6, { random: { 1: 29 } });
-            
+
             it('fails on invalid key', function (done) {
-               
-                store.get('key', function (err, value) {
-                   
-                    expect(err).to.exist;
-                    expect(err.message).to.equal('Bad key segment: key');
-                    done();
-                });
+
+                var value = store.get('key');
+                expect(value).to.equal(null);
+                done();
             });
-            
-            it('accepts 2 arguments', function (done) {
-               
-                store.get('/key1', function (err, value) {
-                   
-                    expect(value).to.equal('abc');
-                    done();
-                });
+
+            it('accepts 1 arguments', function (done) {
+
+                var value = store.get('/key1');
+                expect(value).to.equal('abc');
+                done();
             });
-            
-            it('accepts 3 arguments with criteria', function (done) {
-               
-                store.get('/key1', {}, function (err, value) {
-                   
-                    expect(value).to.equal('abc');
-                    done();
-                });
+
+            it('accepts 2 arguments with criteria', function (done) {
+
+                var value = store.get('/key1', {});
+                expect(value).to.equal('abc');
+                done();
             });
-            
-            it('accepts 3 arguments with depth', function (done) {
-           
-                store.get('/', 2, function (err, value) {
-               
-                    expect(value).to.deep.equal({ key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 });
-                    done();
-                });
+
+            it('accepts 2 arguments with depth', function (done) {
+
+                var value = store.get('/', 2);
+                expect(value).to.deep.equal({ key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 });
+                done();
             });
         });
 
@@ -136,9 +128,11 @@ describe('Confidence', function () {
             it('fails on invalid tree', function (done) {
 
                 var store = new Confidence.Store();
-                var err = store.load(null);
-                expect(err.message).to.equal('Node cannot be null or undefined');
-                expect(err.path).to.equal('/');
+                expect(function () {
+
+                    var err = store.load(null);
+                }).to.throw('Node cannot be null or undefined');
+
                 done();
             });
         });
@@ -153,18 +147,10 @@ describe('Confidence', function () {
                 done();
             });
 
-            it('fails on array node', function (done) {
+            it('fails on Error node', function (done) {
 
-                var err = Confidence.Store.validate({ key: [] });
+                var err = Confidence.Store.validate({ key: new Error() });
                 expect(err.message).to.equal('Invalid node object type');
-                expect(err.path).to.equal('/key');
-                done();
-            });
-
-            it('fails on empty object node', function (done) {
-
-                var err = Confidence.Store.validate({ key: {} });
-                expect(err.message).to.equal('Node cannot be empty');
                 expect(err.path).to.equal('/key');
                 done();
             });
@@ -205,14 +191,6 @@ describe('Confidence', function () {
 
                 var err = Confidence.Store.validate({ key: { $unknown: 'asd' } });
                 expect(err.message).to.equal('Unknown $ directive $unknown');
-                expect(err.path).to.equal('/key');
-                done();
-            });
-
-            it('fails on invalid child key', function (done) {
-
-                var err = Confidence.Store.validate({ key: { 'sub key': 'abc' } });
-                expect(err.message).to.equal('Invalid key string sub key');
                 expect(err.path).to.equal('/key');
                 done();
             });

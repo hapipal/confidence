@@ -98,7 +98,7 @@ The result is:
 ### Basic structure
 
 The configuration document starts with a simple object. key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
-for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans). Values cannot be
+for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans) as well as arrays. Values cannot be
 `null` or `undefined`.
 
 ```json
@@ -197,9 +197,12 @@ key value for `'/key3'` of `5`, and a criterion value of `50` will return a key 
 
 The configuration parser used to load the configuration document and apply criteria to get values based on keys.
 
-### new Store()
+### new Store([document])
 
-Creates an empty configuration storage container.
+Creates an empty configuration storage container where:
+
+- `document` - an optional object containing a **confidence** configuration object generated from a parsed JSON document.
+  If the document is invalid, will throw an error. Defaults to `{}`.
 
 ```javascript
 var Confidence = require('confidence');
@@ -212,6 +215,7 @@ var store = new Store();
 Validates the provided configuration, clears any existing configuration, then loads the configuration where:
 
 - `document` - an object containing a **confidence** configuration object generated from a parsed JSON document.
+  If the document is invlaid, will throw an error.
 
 ```javascript
 var document = {
@@ -228,22 +232,17 @@ var document = {
 store.load(document);
 ```
 
-### store.get(key, [criteria,] [depth,] next)
+### store.get(key, [criteria,] [depth])
 
 Retrieves a value from the configuration document after applying the provided criteria where:
 
 - `key` - the requested key path. All keys must begin with '/'. '/' returns the the entire document.
 - `criteria` - optional object used as criteria for applying filters in the configuration document. Defaults to `{}`.
 - `depth` - optional number used to determine how deep the resulting tree is. Defaults to full depth.
-- `next` - required callback with the signature `function(err, value)` where:
-    - `err` - error value if the request failed.
-    - `value` - the configuration value found at the requested key. If key not found, returns `null` without an `err`.
 
-Note that the `next()` callback is called on the same tick.
+Returns the value found after applying the criteria. If the key is invalid or not found, returns null.
 
 ```javascript
-store.get('/c', { size: 'big' }, function(err, value) {
-    // Check err, use value
-});
+var value = store.get('/c', { size: 'big' });
 ```
 
