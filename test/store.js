@@ -50,7 +50,7 @@ describe('Confidence', function () {
             },
             ab: {
                 // Range
-                $filter: 'group1',
+                $filter: 'random.1',
                 $range: [
                     { limit: 10, value: 4 },
                     { limit: 20, value: 5 }
@@ -87,11 +87,11 @@ describe('Confidence', function () {
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, ab: 6 }, { xfactor: 'yes' });
             get('/', { key1: 'abc', key2: 2, key3: {}, ab: 6 }, null, 1);
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, ab: 6 }, null, 2);
-            get('/ab', 4, { group1: 9 });
-            get('/ab', 4, { group1: 10 });
-            get('/ab', 5, { group1: 11 });
-            get('/ab', 5, { group1: 19 });
-            get('/ab', 6, { group1: 29 });
+            get('/ab', 4, { random: { 1: 9 } });
+            get('/ab', 4, { random: { 1: 10 } });
+            get('/ab', 5, { random: { 1: 11 } });
+            get('/ab', 5, { random: { 1: 19 } });
+            get('/ab', 6, { random: { 1: 29 } });
         });
 
         describe('#load', function () {
