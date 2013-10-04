@@ -245,6 +245,14 @@ describe('Confidence', function () {
                 done();
             });
 
+            it('fails on range array element with non-number limit', function (done) {
+
+                var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 'a' }], $default: 1 } });
+                expect(err.message).to.equal('Range limit must be a number');
+                expect(err.path).to.equal('/key');
+                done();
+            });
+
             it('fails on out of order range array elements', function (done) {
 
                 var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 11, value: 2 }, { limit: 10, value: 6 }], $default: 1 } });
