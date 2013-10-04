@@ -12,6 +12,7 @@ work with any existing JSON-based configuration, serving values based on object 
     - [Basic Structure](#basic-structure)
     - [Filters](#filters)
     - [Ranges](#ranges)
+    - [Metadata](#metadata)
 - [API](#api)
 
 # Example
@@ -22,7 +23,9 @@ work with any existing JSON-based configuration, serving values based on object 
     "key2": {
         "$filter": "env",
         "production": {
-            "deeper": "value"
+            "deeper": {
+                "$value": "value"
+            }
         },
         "$default": {
             "$filter": "platform",
@@ -45,6 +48,9 @@ work with any existing JSON-based configuration, serving values based on object 
             { "limit": 20, "value": 5 }
         ],
         "$default": 6
+    },
+    "$meta": {
+        "description": "example file"
     }
 }
 ```
@@ -166,7 +172,6 @@ Filter can have a default value which will be used is the provided criteria set 
 
 Ranges provide a way to filter a value based on numerical buckets. The criteria value must be an integer and it matched against the highest bucket limit it can fit.
 
-
 ```json
 {
     "key1": "abc",
@@ -189,6 +194,60 @@ Ranges provide a way to filter a value based on numerical buckets. The criteria 
 If the criteria includes a value for `random.a`, that value is matched against the sorted range entries. The criterion value will match the entry with highest limit it
 is still less than or equal the limit of. For example, a criterion value of `5` will return a key value for `'/key3'` of `4`. A criterion value of `15` will return a
 key value for `'/key3'` of `5`, and a criterion value of `50` will return a key value for `'/key3'` of `6`.
+
+### Metadata
+
+The configuration file can be annotated with metadata that is ignore (and removed) by the parser. Metadata is useful for human readabe information as well as to
+enable other tools such as configuraiton editors and validators, going beyong the basic parsing specified here.
+
+```json
+{
+    "key1": "abc",
+    "key2": {
+        "$filter": "system.env",
+        "production": 1,
+        "$default": 2
+    },
+    "key3": {
+        "$filter": "random.a",
+        "$range": [
+            { "limit": 10, "value": 4 },
+            { "limit": 20, "value": 5 }
+        ],
+        "$default": 6
+    },
+    "$meta": {
+        "anything": "really"
+    }
+}
+```
+
+To annotate non object values, any value can be wrapped in an object and provided using the `$value` directive.
+
+```json
+{
+    "key1": {
+        "$value": "abc",
+        "$meta": "whatever"
+    },
+    "key2": {
+        "$filter": "system.env",
+        "production": 1,
+        "$default": 2
+    },
+    "key3": {
+        "$filter": "random.a",
+        "$range": [
+            { "limit": 10, "value": 4 },
+            { "limit": 20, "value": 5 }
+        ],
+        "$default": 6
+    },
+    "$meta": {
+        "anything": "really"
+    }
+}
+```
 
 # API
 
@@ -244,3 +303,15 @@ Returns the value found after applying the criteria. If the key is invalid or no
 var value = store.get('/c', { size: 'big' });
 ```
 
+### store.meta(key, [criteria])
+
+Retrieves the metadata (if any) from the configuration document after applying the provided criteria where:
+
+- `key` - the requested key path. All keys must begin with '/'. '/' returns the the entire document.
+- `criteria` - optional object used as criteria for applying filters in the configuration document. Defaults to `{}`.
+
+Returns the metadata found after applying the criteria. If the key is invalid or not found, or if no metadata is available, returns undefined.
+
+```javascript
+var value = store.meta('/c', { size: 'big' });
+```

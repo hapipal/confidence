@@ -30,7 +30,10 @@ describe('Confidence', function () {
                 $filter: 'env',
                 production: {
                     // Fork
-                    deeper: 'value'             // Value
+                    deeper: {
+                        // Value
+                        $value: 'value'         // Value
+                    }
                 },
                 $default: {
                     // Filter
@@ -41,7 +44,10 @@ describe('Confidence', function () {
             },
             key3: {
                 // Fork
-                sub1: 0,
+                sub1: {
+                    $value: 0,
+                    $meta: 'something'
+                },
                 sub2: {
                     // Filter
                     $filter: 'xfactor',
@@ -58,6 +64,9 @@ describe('Confidence', function () {
                     { limit: 20, value: 5 }
                 ],
                 $default: 6
+            },
+            $meta: {
+                something: 'else'
             }
         };
 
@@ -95,6 +104,33 @@ describe('Confidence', function () {
 
                 var value = store.get('key');
                 expect(value).to.equal(undefined);
+                done();
+            });
+        });
+
+        describe('#meta', function () {
+
+            it('returns root meta', function (done) {
+
+                var store = new Confidence.Store();
+                store.load(tree);
+                expect(store.meta('/')).to.deep.equal(tree.$meta);
+                done();
+            });
+
+            it('returns nested meta', function (done) {
+
+                var store = new Confidence.Store();
+                store.load(tree);
+                expect(store.meta('/key3/sub1')).to.equal('something');
+                done();
+            });
+
+            it('returns undefined for missing meta', function (done) {
+
+                var store = new Confidence.Store();
+                store.load(tree);
+                expect(store.meta('/key1')).to.equal(undefined);
                 done();
             });
         });
@@ -168,6 +204,22 @@ describe('Confidence', function () {
                 var err = Confidence.Store.validate({ key: { sub: { $b: 5 } } });
                 expect(err.message).to.equal('Unknown $ directive $b');
                 expect(err.path).to.equal('/key/sub');
+                done();
+            });
+
+            it('fails on invalid value node', function (done) {
+
+                var err = Confidence.Store.validate({ key: { $value: { $b: 5 } } });
+                expect(err.message).to.equal('Unknown $ directive $b');
+                expect(err.path).to.equal('/key/$value');
+                done();
+            });
+
+            it('fails on mix of value and filter', function (done) {
+
+                var err = Confidence.Store.validate({ key: { $value: 1, $filter: 'a', a: 1 } });
+                expect(err.message).to.equal('Value directive can only be used with meta or nothing');
+                expect(err.path).to.equal('/key');
                 done();
             });
 
