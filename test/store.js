@@ -41,11 +41,11 @@ describe('Confidence', function () {
             },
             key3: {
                 // Fork
-                sub1: 123,
+                sub1: 0,
                 sub2: {
                     // Filter
                     $filter: 'xfactor',
-                    yes: 6                      // Value
+                    yes: ''                      // Value
                 }
             },
             key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
@@ -83,8 +83,8 @@ describe('Confidence', function () {
             get('/key2/deeper', undefined, { env: 'qa' });
             get('/key2/deeper', undefined);
             get('/key5', {});
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123 }, key4: [12, 13, 14], key5: {}, ab: 6 });
-            get('/', { key1: 'abc', key2: 2, key3: { sub1: 123, sub2: 6 }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, ab: 6 });
+            get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
             get('/ab', 4, { random: { 1: 9 } });
             get('/ab', 4, { random: { 1: 10 } });
             get('/ab', 5, { random: { 1: 11 } });
