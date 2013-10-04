@@ -45,7 +45,7 @@ Without any criteria applied, the above configuration document will result in th
 ```json
 {
     "key1": "abc",
-    "key2": 2
+    "key2": 2,
     "key3": {
         "sub1": 123
     },
