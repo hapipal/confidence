@@ -51,6 +51,7 @@ describe('Confidence', function () {
                 sub2: {
                     // Filter
                     $filter: 'xfactor',
+                    $id: 'x_factor',
                     yes: ''                      // Value
                 }
             },
@@ -59,7 +60,11 @@ describe('Confidence', function () {
             ab: {
                 // Range
                 $filter: 'random.1',
+                $id: 'random_ab_test',
                 $range: [
+                    { limit: 1, value: [1, 2] },
+                    { limit: 2, value: { $value: 2 } },
+                    { limit: 3, value: { a: 5 }, id: '3' },
                     { limit: 10, value: 4 },
                     { limit: 20, value: 5 }
                 ],
@@ -75,18 +80,22 @@ describe('Confidence', function () {
             var store = new Confidence.Store();
             store.load(tree);
 
-            var get = function (key, result, criteria) {
+            var get = function (key, result, criteria, applied) {
 
                 it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), function (done) {
 
-                    var value = store.get(key, criteria);
+                    var resultApplied = [];
+                    var value = store.get(key, criteria, applied ? resultApplied : null);
                     expect(value).to.deep.equal(result);
+                    if (applied) {
+                        expect(resultApplied).to.deep.equal(applied);
+                    }
                     done();
                 });
             };
 
             get('/key1', 'abc');
-            get('/key2', 2);
+            get('/key2', 2, null, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: '$default' }]);
             get('/key2', 1, { platform: 'ios' });
             get('/key2/deeper', 'value', { env: 'production' });
             get('/key2/deeper', undefined, { env: 'qa' });
@@ -94,6 +103,8 @@ describe('Confidence', function () {
             get('/key5', {});
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, ab: 6 });
             get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
+            get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
+            get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
             get('/ab', 4, { random: { 1: 9 } });
             get('/ab', 4, { random: { 1: 10 } });
             get('/ab', 5, { random: { 1: 11 } });
@@ -324,6 +335,14 @@ describe('Confidence', function () {
                 var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: 1 }], a: 1 } });
                 expect(err.message).to.equal('Range with non-ranged values');
                 expect(err.path).to.equal('/key');
+                done();
+            });
+
+            it('fails on invalid id', function (done) {
+
+                var err = Confidence.Store.validate({ key: 5, $id: 4 });
+                expect(err.message).to.equal('Id value must be a non-empty string');
+                expect(err.path).to.equal('/');
                 done();
             });
         });
