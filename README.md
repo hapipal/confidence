@@ -75,7 +75,7 @@ With the following criteria applied:
     "env": "production",
     "platform": "ios",
     "xfactor": "yes",
-    "random": {
+    "random.a": {
         "1": 15
     }
 }
@@ -170,7 +170,7 @@ Filter can have a default value which will be used is the provided criteria set 
 
 ### Ranges
 
-Ranges provide a way to filter a value based on numerical buckets. The criteria value must be an integer and it matched against the highest bucket limit it can fit.
+Ranges provide a way to filter a value based on numerical buckets. The criteria value must be an integer and it matched against the lowest bucket limit it can fit.
 
 ```json
 {
@@ -191,7 +191,7 @@ Ranges provide a way to filter a value based on numerical buckets. The criteria 
 }
 ```
 
-If the criteria includes a value for `random.a`, that value is matched against the sorted range entries. The criterion value will match the entry with highest limit it
+If the criteria includes a value for `random.a`, that value is matched against the sorted range entries. The criterion value will match the entry with lowest limit it
 is still less than or equal the limit of. For example, a criterion value of `5` will return a key value for `'/key3'` of `4`. A criterion value of `15` will return a
 key value for `'/key3'` of `5`, and a criterion value of `50` will return a key value for `'/key3'` of `6`.
 
