@@ -75,8 +75,8 @@ With the following criteria applied:
     "env": "production",
     "platform": "ios",
     "xfactor": "yes",
-    "random.a": {
-        "1": 15
+    "random": {
+        "a": 15
     }
 }
 ```
