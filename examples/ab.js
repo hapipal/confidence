@@ -26,7 +26,6 @@ var store = new Confidence.Store(master);
 
 var guid = Confidence.id.generate();
 
-
 // When the client comes back requesting it's configuration, convert the id to a criteria object
 
 var criteria = Confidence.id.criteria(guid);
