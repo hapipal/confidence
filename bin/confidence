@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+// Load modules
+
+var Fs = require('fs');
+var Optimist = require('optimist');
+var Alce = require('alce');
+var Confidence = require('../');
+
+
+// Declare internals
+
+var internals = {};
+
+
+internals.argv = Optimist.usage('Usage: $0 -c config.json [--filter.criterion=value]')
+                    .demand(['c'])
+                    .argv;
+
+
+internals.getConfig = function () {
+
+    var config = null;
+    var configPath = internals.argv.c[0] !== '/' ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
+
+    try {
+        config = Alce.parse(Fs.readFileSync(configPath));
+    }
+    catch (err) {
+        console.log('Failed loading configuration file: ' + internals.argv.c + ' (' + err.message + ')');
+        process.exit(1);
+    }
+
+    return config;
+}
+
+
+internals.generate = function () {
+
+    var config = internals.getConfig();
+    var store = new Confidence.Store(config);
+    var set = store.get('/', internals.argv.filter);
+
+    if (!set) {
+        process.stderr.write('Failed to generate document');
+    }
+
+    process.stdout.write(JSON.stringify(set));
+};
+
+internals.generate();
