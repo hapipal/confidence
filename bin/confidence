@@ -45,7 +45,7 @@ internals.generate = function () {
         process.stderr.write('Failed to generate document');
     }
 
-    process.stdout.write(JSON.stringify(set));
+    process.stdout.write(JSON.stringify(set, null, '\t'));
 };
 
 internals.generate();
