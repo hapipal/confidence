@@ -98,7 +98,8 @@ describe('Confidence Binary', function () {
         confidence.stdout.on('data', function (data) {
 
             var result = data.toString();
-            expect(result).to.equal('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            var obj = JSON.parse('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            expect(result).to.equal(JSON.stringify(obj, null, '\t'));
             confidence.kill();
             done();
         });
@@ -116,7 +117,8 @@ describe('Confidence Binary', function () {
         confidence.stdout.on('data', function (data) {
 
             var result = data.toString();
-            expect(result).to.equal('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            var obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            expect(result).to.equal(JSON.stringify(obj, null, '\t'));
             confidence.kill();
             done();
         });
