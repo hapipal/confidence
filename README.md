@@ -265,7 +265,7 @@ Creates an empty configuration storage container where:
 ```javascript
 var Confidence = require('confidence');
 
-var store = new Store();
+var store = new Confidence.Store();
 ```
 
 ### store.load(document)
