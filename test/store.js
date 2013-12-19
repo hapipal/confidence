@@ -39,7 +39,7 @@ describe('Confidence', function () {
                     // Filter
                     $filter: 'platform',
                     ios: 1,                     // Value
-                    not_android: false,         // Value
+                    android: false,             // Value
                     $default: 2                 // Value
                 }
             },
@@ -98,8 +98,8 @@ describe('Confidence', function () {
             get('/key1', 'abc');
             get('/key2', 2, null, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: '$default' }]);
             get('/key2', 1, { platform: 'ios' });
-            get('/key2', false, { platform: 'not_android' });
-            get('/key2', 2, { platform: 'the other one' });
+            get('/key2', false, { platform: 'android' });
+            get('/key2', 2, { platform: 'else' });
             get('/key2/deeper', 'value', { env: 'production' });
             get('/key2/deeper', undefined, { env: 'qa' });
             get('/key2/deeper', undefined);
