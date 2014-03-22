@@ -97,7 +97,7 @@ describe('Confidence', function () {
 
             get('/key1', 'abc');
             get('/key2', 2, null, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: '$default' }]);
-            get('/key2', 1, { platform: 'ios' });
+            get('/key2', 1, { platform: 'ios' }, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: 'ios' }]);
             get('/key2', false, { platform: 'android' });
             get('/key2', 2, { platform: 'else' });
             get('/key2/deeper', 'value', { env: 'production' });
@@ -109,7 +109,7 @@ describe('Confidence', function () {
             get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
             get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
             get('/ab', 4, { random: { 1: 9 } });
-            get('/ab', 4, { random: { 1: 10 } });
+            get('/ab', 4, { random: { 1: 10 } }, [{ filter: 'random.1', valueId: '4', filterId: 'random_ab_test' }]);
             get('/ab', 5, { random: { 1: 11 } });
             get('/ab', 5, { random: { 1: 19 } });
             get('/ab', 6, { random: { 1: 29 } });
