@@ -143,7 +143,7 @@ contain alphanumeric characters and '_'.
 When asking for `'/key2'`, if no criteria set is provided or the criteria set does not include a value for the `'env'` filter, no value is available. Only when a criteria
 set with a key `'env'` and value `'production'` is provided, the value returned is `1`.
 
-Filtes can point to a nested value using '.' seperated tokens for accessing child values within the criteria object.
+Filters can point to a nested value using '.' seperated tokens for accessing child values within the criteria object.
 
 ```json
 {
