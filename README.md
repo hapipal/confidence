@@ -155,7 +155,7 @@ Filters can point to a nested value using '.' seperated tokens for accessing chi
 }
 ```
 
-Filter can have a default value which will be used is the provided criteria set does not include a value of the filter or if the value does not match.
+Filters can have a default value which will be used if the provided criteria set does not include a value for the filter or if the value does not match.
 
 ```json
 {
@@ -170,7 +170,7 @@ Filter can have a default value which will be used is the provided criteria set 
 
 ### Ranges
 
-Ranges provide a way to filter a value based on numerical buckets. The criteria value must be an integer and it matched against the lowest bucket limit it can fit.
+Ranges provide a way to filter a value based on numerical buckets. The criteria value must be an integer and be matched against the lowest bucket limit it can fit.
 
 ```json
 {
@@ -197,8 +197,8 @@ key value for `'/key3'` of `5`, and a criterion value of `50` will return a key 
 
 ### Metadata
 
-The configuration file can be annotated with metadata that is ignore (and removed) by the parser. Metadata is useful for human readabe information as well as to
-enable other tools such as configuraiton editors and validators, going beyong the basic parsing specified here.
+The configuration file can be annotated with metadata that is ignored (and removed) by the parser. Metadata is useful for human readable information as well as to
+enable other tools such as configuration editors and validators, going beyong the basic parsing specified here.
 
 ```json
 {
