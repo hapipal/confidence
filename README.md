@@ -7,6 +7,8 @@ work with any existing JSON-based configuration, serving values based on object 
 
 [![Build Status](https://secure.travis-ci.org/spumko/confidence.png)](http://travis-ci.org/spumko/confidence)
 
+Lead Maintainer: [Kevin Decker](https://github.com/kpdecker)
+
 - [Example](#example)
 - [Document Format](#document-format)
     - [Basic Structure](#basic-structure)
