@@ -1,4 +1,4 @@
-![confidence Logo](https://raw.github.com/hapijs/con/master/images/confidence.png)
+![confidence Logo](https://raw.github.com/spumko/con/master/images/confidence.png)
 
 **Confidence** is a configuration document format, an API, and a foundation for A/B testing. The configuration format is designed to
 work with any existing JSON-based configuration, serving values based on object path (`'/a/b/c'` translates to ``a.b.c``). In addition,
