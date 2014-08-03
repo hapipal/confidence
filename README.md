@@ -1,11 +1,10 @@
-<a href="https://github.com/spumko"><img src="https://raw.github.com/spumko/spumko/master/images/from.png" align="right" /></a>
 ![confidence Logo](https://raw.github.com/spumko/con/master/images/confidence.png)
 
 **Confidence** is a configuration document format, an API, and a foundation for A/B testing. The configuration format is designed to
 work with any existing JSON-based configuration, serving values based on object path (`'/a/b/c'` translates to ``a.b.c``). In addition,
 **confidence** defines special $-prefixed keys used to filter values for a given criteria.
 
-[![Build Status](https://secure.travis-ci.org/spumko/confidence.png)](http://travis-ci.org/spumko/confidence)
+[![Build Status](https://secure.travis-ci.org/hapijs/confidence.png)](http://travis-ci.org/hapijs/confidence)
 
 Lead Maintainer: [Kevin Decker](https://github.com/kpdecker)
 
