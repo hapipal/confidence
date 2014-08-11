@@ -3,7 +3,6 @@
 var Lab = require('lab');
 var Confidence = require('../');
 
-
 // Declare internals
 
 var internals = {};
@@ -11,11 +10,12 @@ var internals = {};
 
 // Test shortcuts
 
+var lab = exports.lab = Lab.script();
 var expect = Lab.expect;
-var before = Lab.before;
-var after = Lab.after;
-var describe = Lab.experiment;
-var it = Lab.test;
+var before = lab.before;
+var after = lab.after;
+var describe = lab.experiment;
+var it = lab.test;
 
 
 describe('Confidence', function () {
@@ -229,11 +229,34 @@ describe('Confidence', function () {
                 done();
             });
 
-            it('fails on mix of value and filter', function (done) {
+            it('fails on mix of value and other criteria', function (done) {
 
-                var err = Confidence.Store.validate({ key: { $value: 1, $filter: 'a', a: 1 } });
-                expect(err.message).to.equal('Value directive can only be used with meta or nothing');
-                expect(err.path).to.equal('/key');
+                var values = {
+                    $filter: 'a',
+                    $default: '1',
+                    $range: [{ limit: 10, value: 4 }],
+                    a: 1
+                };
+                var node = {
+                    key: {
+                        $value: 1
+                    }
+                };
+
+                var keys = Object.keys(values);
+
+                for (var i = 0, il = keys.length; i < il; ++i) {
+                    var key = keys[i];
+                    var value = values[key];
+
+                    node.key[key] = value;
+
+                    var err = Confidence.Store.validate(node);
+                    expect(err.message).to.equal('Value directive can only be used with meta or nothing');
+                    expect(err.path).to.equal('/key');
+
+                }
+
                 done();
             });
 
@@ -348,6 +371,60 @@ describe('Confidence', function () {
                 expect(err.path).to.equal('/');
                 done();
             });
+
+            it('fails on empty id', function (done) {
+
+                var err = Confidence.Store.validate({ key: 5, $id: null });
+                expect(err.message).to.equal('Id value must be a non-empty string');
+                expect(err.path).to.equal('/');
+                done();
+            });
+
+            it('returns null with null as the node', function (done) {
+
+                var err = Confidence.Store.validate(null);
+                expect(err).to.equal(null);
+                done();
+            });
+
+            it('returns null with undefined as the node', function (done) {
+
+                var err = Confidence.Store.validate(undefined);
+                expect(err).to.equal(null);
+                done();
+            });
+
+            it('fails on node that is a Date object', function (done) {
+                var err = Confidence.Store.validate(new Date);
+
+                expect(err.message).to.equal('Invalid node object type');
+                done();
+            });
+        });
+
+        describe('_logApplied', function () {
+
+            it('adds the filter to the list of applied filters if node or criteria is not defined ', function (done) {
+                var applied = [];
+
+                Confidence.Store._logApplied(applied, { filter: 'env', valueId: '$default'});
+                expect(applied.length).to.equal(1);
+
+                done();
+            });
+        });
+
+        it('accepts a document object in the constructor', function (done) {
+            var load = Confidence.Store.prototype.load;
+
+            Confidence.Store.prototype.load = function (document) {
+                expect(document).to.deep.equal(tree);
+                Confidence.Store.prototype.load = load;
+                done();
+            }
+
+            var store = new Confidence.Store(tree);
+
         });
     });
 });
