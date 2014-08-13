@@ -395,6 +395,7 @@ describe('Confidence', function () {
             });
 
             it('fails on node that is a Date object', function (done) {
+
                 var err = Confidence.Store.validate(new Date);
 
                 expect(err.message).to.equal('Invalid node object type');
@@ -409,19 +410,20 @@ describe('Confidence', function () {
 
                 Confidence.Store._logApplied(applied, { filter: 'env', valueId: '$default'});
                 expect(applied.length).to.equal(1);
-
                 done();
             });
         });
 
         it('accepts a document object in the constructor', function (done) {
+
             var load = Confidence.Store.prototype.load;
 
             Confidence.Store.prototype.load = function (document) {
+
                 expect(document).to.deep.equal(tree);
                 Confidence.Store.prototype.load = load;
                 done();
-            }
+            };
 
             var store = new Confidence.Store(tree);
 
