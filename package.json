@@ -3,7 +3,7 @@
   "description": "Configuration API",
   "version": "1.0.0",
   "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
-  "repository": "git://github.com/spumko/confidence",
+  "repository": "git://github.com/hapijs/confidence",
   "main": "index",
   "keywords": [
     "hapi",
@@ -18,7 +18,7 @@
     "alce": "1.0.x",
     "boom": "2.x.x",
     "hoek": "2.x.x",
-    "optimist": "0.6.x"
+    "yargs": "1.3.x"
   },
   "devDependencies": {
     "lab": "4.x.x"
@@ -32,7 +32,7 @@
   "licenses": [
     {
       "type": "BSD",
-      "url": "http://github.com/spumko/confidence/raw/master/LICENSE"
+      "url": "http://github.com/hapijs/confidence/raw/master/LICENSE"
     }
   ]
 }

@@ -3,7 +3,7 @@
 // Load modules
 
 var Fs = require('fs');
-var Optimist = require('optimist');
+var Yargs = require('yargs');
 var Alce = require('alce');
 var Confidence = require('../');
 
@@ -13,7 +13,7 @@ var Confidence = require('../');
 var internals = {};
 
 
-internals.argv = Optimist.usage('Usage: $0 -c config.json [--filter.criterion=value]')
+internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value]')
                     .demand(['c'])
                     .argv;
 

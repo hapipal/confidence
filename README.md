@@ -6,7 +6,7 @@ work with any existing JSON-based configuration, serving values based on object 
 
 [![Build Status](https://secure.travis-ci.org/hapijs/confidence.png)](http://travis-ci.org/hapijs/confidence)
 
-Lead Maintainer: [Kevin Decker](https://github.com/kpdecker)
+Lead Maintainer: [Patrick Kettner](https://github.com/patrickkettner)
 
 - [Example](#example)
 - [Document Format](#document-format)
