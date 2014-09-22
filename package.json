@@ -2,7 +2,6 @@
   "name": "confidence",
   "description": "Configuration API",
   "version": "1.0.0",
-  "author": "Eran Hammer <eran@hueniverse.com> (http://hueniverse.com)",
   "repository": "git://github.com/hapijs/confidence",
   "main": "index",
   "keywords": [
