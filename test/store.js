@@ -74,7 +74,7 @@ describe('Confidence', function () {
             }
         };
 
-        describe('#get', function () {
+        describe('get()', function () {
 
             var store = new Confidence.Store();
             store.load(tree);
@@ -120,7 +120,7 @@ describe('Confidence', function () {
             });
         });
 
-        describe('#meta', function () {
+        describe('meta()', function () {
 
             it('returns root meta', function (done) {
 
@@ -147,7 +147,7 @@ describe('Confidence', function () {
             });
         });
 
-        describe('#load', function () {
+        describe('load()', function () {
 
             it('fails on invalid tree', function (done) {
 
@@ -161,7 +161,7 @@ describe('Confidence', function () {
             });
         });
 
-        describe('#validate', function () {
+        describe('validate()', function () {
 
             it('fails on Error node', function (done) {
 
@@ -401,7 +401,7 @@ describe('Confidence', function () {
             });
         });
 
-        describe('_logApplied', function () {
+        describe('_logApplied()', function () {
 
             it('adds the filter to the list of applied filters if node or criteria is not defined ', function (done) {
                 var applied = [];
