@@ -105,7 +105,7 @@ The result is:
 ### Basic structure
 
 The configuration document starts with a simple object. key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
-for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans) as well as arrays.
+for special directives. Values can contain any primitive value (e.g. strings, numbers, booleans) as well as arrays and objects.
 
 ```json
 {
@@ -122,6 +122,19 @@ Keys can have children:
     "key2": 2,
     "key3": {
         "sub1": 123
+    }
+}
+```
+
+Objects can be used as values by setting `$parse` to `false`:
+
+```json
+{
+    "key1": "abc",
+    "key2": 2,
+    "key3": {
+        "$value": require('example'),
+        "$parse": false
     }
 }
 ```
