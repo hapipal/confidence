@@ -1,6 +1,7 @@
 // Load modules
 
 var ChildProcess = require('child_process');
+var Code = require('code');
 var Fs = require('fs');
 var Lab = require('lab');
 var Path = require('path');
@@ -14,7 +15,7 @@ var internals = {};
 // Test shortcuts
 
 var lab = exports.lab = Lab.script();
-var expect = Lab.expect;
+var expect = Code.expect;
 var before = lab.before;
 var after = lab.after;
 var describe = lab.experiment;
@@ -105,7 +106,7 @@ it('generates the correct config', function (done) {
 
     confidence.stderr.on('data', function (data) {
 
-        expect(data.toString()).to.not.exist;
+        expect(data.toString()).to.not.exist();
     });
 });
 
@@ -124,6 +125,6 @@ it('generates the correct config', function (done) {
 
     confidence.stderr.on('data', function (data) {
 
-        expect(data.toString()).to.not.exist;
+        expect(data.toString()).to.not.exist();
     });
 });
