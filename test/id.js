@@ -1,5 +1,6 @@
 // Load modules
 
+var Code = require('code');
 var Lab = require('lab');
 var Confidence = require('../');
 
@@ -12,7 +13,7 @@ var internals = {};
 // Test shortcuts
 
 var lab = exports.lab = Lab.script();
-var expect = Lab.expect;
+var expect = Code.expect;
 var describe = lab.experiment;
 var it = lab.test;
 
@@ -31,7 +32,7 @@ describe('generate()', function () {
         var ids = {};
         for (var i = 0; i < 1000; ++i) {
             var id = Confidence.id.generate();
-            expect(ids[id]).to.not.exist;
+            expect(ids[id]).to.not.exist();
             expect(id.length).to.equal(36);
             ids[id] = true;
         }
