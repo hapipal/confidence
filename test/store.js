@@ -53,6 +53,19 @@ var tree = {
     },
     key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
     key5: {},
+    key6: {
+        sub1: {
+            $value: {
+                $value: 'value'
+            }
+        },
+        sub2: {
+            $value: {
+                $value: 'value'
+            },
+            $parse: false
+        }
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -99,8 +112,9 @@ describe('get()', function () {
     get('/key2/deeper', undefined, { env: 'qa' });
     get('/key2/deeper', undefined);
     get('/key5', {});
-    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, ab: 6 });
-    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
+    get('/key6', { sub1: 'value', sub2: { $value: 'value' } });
+    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, key6: { sub1: 'value', sub2: { $value: 'value' } }, ab: 6 });
+    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, key6: { sub1: 'value', sub2: { $value: 'value' } }, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
     get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
     get('/ab', 4, { random: { 1: 9 } });
@@ -247,7 +261,7 @@ describe('validate()', function () {
             node.key[key] = value;
 
             var err = Confidence.Store.validate(node);
-            expect(err.message).to.equal('Value directive can only be used with meta or nothing');
+            expect(err.message).to.equal('Value directive can only be used with meta, parse or nothing');
             expect(err.path).to.equal('/key');
 
         }
@@ -423,4 +437,3 @@ it('accepts a document object in the constructor', function (done) {
     var store = new Confidence.Store(tree);
 
 });
-
