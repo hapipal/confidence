@@ -149,7 +149,7 @@ describe('get()', () => {
     get('/key9', { animal: 'chicken' }, { env: 'production' });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { xfactor: 'yes' });
-    get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
+    get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '{"$value":2}', filterId: 'random_ab_test' }]);
     get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
     get('/ab', 4, { random: { 1: 9 } });
     get('/ab', 4, { random: { 1: 10 } }, [{ filter: 'random.1', valueId: '4', filterId: 'random_ab_test' }]);
