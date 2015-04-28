@@ -37,6 +37,7 @@ var tree = {
             android: false,             // Value
             $default: 2                 // Value
         }
+
     },
     key3: {
         // Fork
@@ -53,6 +54,19 @@ var tree = {
     },
     key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
     key5: {},
+    key6: {
+        $filter: 'env',
+        production: {
+            animal: 'chicken',
+            color: 'orange'
+        },
+        staging: {
+            animal: 'cow'
+        },
+        $base: {
+            color: 'red'
+        }
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -99,6 +113,8 @@ describe('get()', function () {
     get('/key2/deeper', undefined, { env: 'qa' });
     get('/key2/deeper', undefined);
     get('/key5', {});
+    get('/key6', { animal: 'chicken', color: 'orange' }, { env: 'production' });
+    get('/key6', { color: 'red', animal: 'cow' }, { env: 'staging' });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, ab: 6 });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
