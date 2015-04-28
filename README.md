@@ -250,6 +250,33 @@ To annotate non object values, any value can be wrapped in an object and provide
 }
 ```
 
+### Shared values
+
+If you have values that you would like to share between various configuration objects without duplicating them for each option, you can create a `$base` object.
+
+```json
+{
+  "$filter": "env",
+  "$base": {
+      "logLocation": "/logs"
+  },
+  "production":  {
+      "logLevel": "error"
+  },
+  "qa":  {
+      "logLevel": "info",
+      "logLocation": "/qa/logs"
+  },
+  "staging":  {
+      "logLevel": "debug"
+  }
+}
+```
+
+In this case, when requesting `/` with the criteria of `{ "env" : "production" }`, you will receive `{ "logLevel": "error", "logLocation": "/logs" }`. However when requesting it with the criteria `{ "env": "staging" }`, it will return `{ "logLevel": "debug", "logLocation": "/logs" }`.
+
+In the case that the same key occurs in `$base` and the filtered value the value in `$base` will be overridden. In the above sample, `/` requested with `{ "env": "qa" }` will return `{ "logLevel": "info", "logLocation": "/qa/logs" }`
+
 # API
 
 ## Confidence.Store
