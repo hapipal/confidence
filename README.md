@@ -273,9 +273,45 @@ If you have values that you would like to share between various configuration ob
 }
 ```
 
-In this case, when requesting `/` with the criteria of `{ "env" : "production" }`, you will receive `{ "logLevel": "error", "logLocation": "/logs" }`. However when requesting it with the criteria `{ "env": "staging" }`, it will return `{ "logLevel": "debug", "logLocation": "/logs" }`.
+When requesting the **key** `/` with:
 
-In the case that the same key occurs in `$base` and the filtered value the value in `$base` will be overridden. In the above sample, `/` requested with `{ "env": "qa" }` will return `{ "logLevel": "info", "logLocation": "/qa/logs" }`
+* **criteria** of `{ "env" : "production" }`
+* Result will be:
+
+```json
+{
+	"logLevel": "error",
+	"logLocation": "/logs"
+}
+```
+
+However when requesting the **key** `/` with:
+
+* **criteria** of `{ "env" : "staging" }`
+* Result will be:
+
+```json
+{
+	"logLevel": "debug",
+	"logLocation": "/logs"
+}
+```
+
+If the same key occurs in `$base` and the `filtered value` then value in `$base` will be overridden.
+
+In the above sample, when requesting the **key** `/` with:
+
+* **criteria** of `{ "env": "qa" }`
+
+* Result will be:
+
+
+```json
+{
+	"logLevel": "info",
+	"logLocation": "/qa/logs"
+}
+```
 
 # API
 
