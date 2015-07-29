@@ -128,3 +128,37 @@ it('generates the correct config', function (done) {
         expect(data.toString()).to.not.exist();
     });
 });
+
+it('generates the correct config with custom indentation', function (done) {
+
+    var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 2]);
+
+    confidence.stdout.on('data', function (data) {
+
+        var result = data.toString();
+        var obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+        expect(result).to.equal(JSON.stringify(obj, null, 2));
+        confidence.kill();
+        done();
+    });
+
+    confidence.stderr.on('data', function (data) {
+
+        expect(data.toString()).to.not.exist();
+    });
+});
+
+it('fails when custom indentation is not a number', function (done) {
+
+    var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 'someString']);
+
+    confidence.stdout.on('data', function (data) {
+        expect(data.toString()).to.not.exist();
+    });
+
+    confidence.stderr.on('data', function (data) {
+        expect(data.toString()).to.exist();
+        confidence.kill();
+        done();
+    });
+});
