@@ -158,7 +158,9 @@ it('fails when custom indentation is not a number', function (done) {
 
     confidence.stderr.on('data', function (data) {
         expect(data.toString()).to.exist();
-        confidence.kill();
+    });
+
+    confidence.on('close', function () {
         done();
     });
 });
