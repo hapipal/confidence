@@ -15,6 +15,10 @@ var internals = {};
 
 internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value]')
                     .demand(['c'])
+                    option('i', {
+                        alias: 'indentation',
+                        default: 4
+                    })
                     .argv;
 
 
@@ -40,12 +44,13 @@ internals.generate = function () {
     var config = internals.getConfig();
     var store = new Confidence.Store(config);
     var set = store.get('/', internals.argv.filter);
+    var indentation = parseInt(internals.argv.indentation, 10);
 
     if (!set) {
         process.stderr.write('Failed to generate document');
     }
 
-    process.stdout.write(JSON.stringify(set, null, 4));
+    process.stdout.write(JSON.stringify(set, null, indentation));
 };
 
 internals.generate();
