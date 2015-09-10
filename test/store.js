@@ -80,6 +80,19 @@ var tree = {
           {animal: 'cat'}
         ]
     },
+    key8: {
+        $filter: 'env',
+        production: [
+          {animal: 'chicken'},
+          {animal: 'dog'}
+        ],
+        $base: {animal: 'cat'}
+    },
+    key9: {
+        $filter: 'env',
+        production: {animal: 'chicken'},
+        $base: [{animal: 'cat'}]
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -130,6 +143,8 @@ describe('get()', function () {
     get('/key6', { color: 'red', animal: 'cow' }, { env: 'staging' });
     get('/key7', [{ animal: 'cat'},{ animal: 'chicken'},{ animal: 'dog'}], { env: 'production' });
     get('/key7', [{ animal: 'cat'},{ animal: 'cow'}], { env: 'staging' });
+    get('/key8', [{ animal: 'chicken'},{ animal: 'dog'}], { env: 'production' });
+    get('/key9', { animal: 'chicken'}, { env: 'production' });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, ab: 6 });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
