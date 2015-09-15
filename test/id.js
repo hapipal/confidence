@@ -40,7 +40,7 @@ describe('generate()', function () {
     });
 });
 
-describe('criteria()', function() {
+describe('criteria()', function () {
 
     it('converts id to criteria', function (done) {
 

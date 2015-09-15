@@ -70,28 +70,28 @@ var tree = {
     key7: {
         $filter: 'env',
         production: [
-          {animal: 'chicken'},
-          {animal: 'dog'}
+          { animal: 'chicken' },
+          { animal: 'dog' }
         ],
         staging: [
-          {animal: 'cow'}
+          { animal: 'cow' }
         ],
         $base: [
-          {animal: 'cat'}
+          { animal: 'cat' }
         ]
     },
     key8: {
         $filter: 'env',
         production: [
-          {animal: 'chicken'},
-          {animal: 'dog'}
+          { animal: 'chicken' },
+          { animal: 'dog' }
         ],
-        $base: {animal: 'cat'}
+        $base: { animal: 'cat' }
     },
     key9: {
         $filter: 'env',
-        production: {animal: 'chicken'},
-        $base: [{animal: 'cat'}]
+        production: { animal: 'chicken' },
+        $base: [{ animal: 'cat' }]
     },
     ab: {
         // Range
@@ -141,10 +141,10 @@ describe('get()', function () {
     get('/key5', {});
     get('/key6', { animal: 'chicken', color: 'orange' }, { env: 'production' });
     get('/key6', { color: 'red', animal: 'cow' }, { env: 'staging' });
-    get('/key7', [{ animal: 'cat'},{ animal: 'chicken'},{ animal: 'dog'}], { env: 'production' });
-    get('/key7', [{ animal: 'cat'},{ animal: 'cow'}], { env: 'staging' });
-    get('/key8', [{ animal: 'chicken'},{ animal: 'dog'}], { env: 'production' });
-    get('/key9', { animal: 'chicken'}, { env: 'production' });
+    get('/key7', [{ animal: 'cat' },{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
+    get('/key7', [{ animal: 'cat' },{ animal: 'cow' }], { env: 'staging' });
+    get('/key8', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
+    get('/key9', { animal: 'chicken' }, { env: 'production' });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, ab: 6 });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
@@ -437,7 +437,7 @@ describe('validate()', function () {
 
     it('fails on node that is a Date object', function (done) {
 
-        var err = Confidence.Store.validate(new Date);
+        var err = Confidence.Store.validate(new Date());
 
         expect(err.message).to.equal('Invalid node object type');
         done();
@@ -447,9 +447,10 @@ describe('validate()', function () {
 describe('_logApplied', function () {
 
     it('adds the filter to the list of applied filters if node or criteria is not defined ', function (done) {
+
         var applied = [];
 
-        Confidence.Store._logApplied(applied, { filter: 'env', valueId: '$default'});
+        Confidence.Store._logApplied(applied, { filter: 'env', valueId: '$default' });
         expect(applied.length).to.equal(1);
         done();
     });

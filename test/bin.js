@@ -153,14 +153,17 @@ it('fails when custom indentation is not a number', function (done) {
     var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 'someString']);
 
     confidence.stdout.on('data', function (data) {
+
         expect(data.toString()).to.not.exist();
     });
 
     confidence.stderr.on('data', function (data) {
+
         expect(data.toString()).to.exist();
     });
 
     confidence.on('close', function () {
+
         done();
     });
 });
