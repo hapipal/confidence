@@ -3,7 +3,7 @@
   "description": "Configuration API",
   "version": "1.4.0",
   "repository": "git://github.com/hapijs/confidence",
-  "main": "index",
+  "main": "lib/index.js",
   "keywords": [
     "hapi",
     "plugin",
@@ -27,7 +27,8 @@
     "confidence": "bin/confidence"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "lab -r console -t 100 -a code -L",
+    "test-cov-html": "lab -r html -o coverage.html -a code -L"
   },
   "licenses": [
     {
