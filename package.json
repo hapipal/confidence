@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "code": "1.x.x",
-    "lab": "5.x.x"
+    "lab": "6.x.x"
   },
   "bin": {
     "confidence": "bin/confidence"
