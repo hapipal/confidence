@@ -197,7 +197,7 @@ describe('load()', function () {
         var store = new Confidence.Store();
         expect(function () {
 
-            var err = store.load({ $b: 3 });
+            store.load({ $b: 3 });
         }).to.throw('Unknown $ directive $b');
 
         done();
@@ -467,7 +467,7 @@ it('accepts a document object in the constructor', function (done) {
         done();
     };
 
-    var store = new Confidence.Store(tree);
+    new Confidence.Store(tree);
 
 });
 
