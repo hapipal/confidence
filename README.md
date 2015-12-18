@@ -104,7 +104,7 @@ The result is:
 
 ### Basic structure
 
-The configuration document starts with a simple object. key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
+The configuration document starts with a simple object. Key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
 for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans) as well as arrays.
 
 ```json
@@ -128,7 +128,7 @@ Keys can have children:
 
 ### Filters
 
-A key can have multiple values based on a filter. The filter is a key provided in a criteria object as the time of retrieval. Filter names can only
+A key can have multiple values based on a filter. The filter is a key provided in a criteria object at the time of retrieval. Filter names can only
 contain alphanumeric characters and '_'.
 
 ```json
