@@ -1,16 +1,17 @@
 #!/usr/bin/env node
+'use strict';
 
 // Load modules
 
-var Fs = require('fs');
-var Yargs = require('yargs');
-var Alce = require('alce');
-var Confidence = require('../');
+const Fs = require('fs');
+const Yargs = require('yargs');
+const Alce = require('alce');
+const Confidence = require('../');
 
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
 internals.checkArguments = function (argv) {
@@ -30,8 +31,8 @@ internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value
 
 internals.getConfig = function () {
 
-    var config = null;
-    var configPath = internals.argv.c[0] !== '/' ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
+    let config = null;
+    const configPath = internals.argv.c[0] !== '/' ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
 
     try {
         config = Alce.parse(Fs.readFileSync(configPath));
@@ -47,10 +48,10 @@ internals.getConfig = function () {
 
 internals.generate = function () {
 
-    var config = internals.getConfig();
-    var store = new Confidence.Store(config);
-    var set = store.get('/', internals.argv.filter);
-    var indentation = internals.argv.indentation;
+    const config = internals.getConfig();
+    const store = new Confidence.Store(config);
+    const set = store.get('/', internals.argv.filter);
+    const indentation = internals.argv.indentation;
 
     if (!set) {
         process.stderr.write('Failed to generate document');
