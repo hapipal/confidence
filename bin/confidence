@@ -32,7 +32,7 @@ internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value
 internals.getConfig = function () {
 
     let config = null;
-    const configPath = internals.argv.c[0] !== '/' ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
+    const configPath = !internals.argv.c.startsWith('/') ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
 
     try {
         config = Alce.parse(Fs.readFileSync(configPath));
