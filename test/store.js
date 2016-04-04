@@ -1,23 +1,24 @@
+'use strict';
 // Load modules
 
-var Code = require('code');
-var Lab = require('lab');
-var Confidence = require('../');
+const Code = require('code');
+const Lab = require('lab');
+const Confidence = require('../');
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
 // Test shortcuts
 
-var lab = exports.lab = Lab.script();
-var expect = Code.expect;
-var describe = lab.experiment;
-var it = lab.test;
+const lab = exports.lab = Lab.script();
+const expect = Code.expect;
+const describe = lab.experiment;
+const it = lab.test;
 
 
-var tree = {
+const tree = {
     // Fork
     key1: 'abc',                        // Value
     key2: {
@@ -111,17 +112,17 @@ var tree = {
     }
 };
 
-describe('get()', function () {
+describe('get()', () => {
 
-    var store = new Confidence.Store();
+    const store = new Confidence.Store();
     store.load(tree);
 
-    var get = function (key, result, criteria, applied) {
+    const get = function (key, result, criteria, applied) {
 
-        it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), function (done) {
+        it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), (done) => {
 
-            var resultApplied = [];
-            var value = store.get(key, criteria, applied ? resultApplied : null);
+            const resultApplied = [];
+            const value = store.get(key, criteria, applied ? resultApplied : null);
             expect(value).to.deep.equal(result);
             if (applied) {
                 expect(resultApplied).to.deep.equal(applied);
@@ -155,47 +156,47 @@ describe('get()', function () {
     get('/ab', 5, { random: { 1: 19 } });
     get('/ab', 6, { random: { 1: 29 } });
 
-    it('fails on invalid key', function (done) {
+    it('fails on invalid key', (done) => {
 
-        var value = store.get('key');
+        const value = store.get('key');
         expect(value).to.equal(undefined);
         done();
     });
 });
 
-describe('meta()', function () {
+describe('meta()', () => {
 
-    it('returns root meta', function (done) {
+    it('returns root meta', (done) => {
 
-        var store = new Confidence.Store();
+        const store = new Confidence.Store();
         store.load(tree);
         expect(store.meta('/')).to.deep.equal(tree.$meta);
         done();
     });
 
-    it('returns nested meta', function (done) {
+    it('returns nested meta', (done) => {
 
-        var store = new Confidence.Store();
+        const store = new Confidence.Store();
         store.load(tree);
         expect(store.meta('/key3/sub1')).to.equal('something');
         done();
     });
 
-    it('returns undefined for missing meta', function (done) {
+    it('returns undefined for missing meta', (done) => {
 
-        var store = new Confidence.Store();
+        const store = new Confidence.Store();
         store.load(tree);
         expect(store.meta('/key1')).to.equal(undefined);
         done();
     });
 });
 
-describe('load()', function () {
+describe('load()', () => {
 
-    it('fails on invalid tree', function (done) {
+    it('fails on invalid tree', (done) => {
 
-        var store = new Confidence.Store();
-        expect(function () {
+        const store = new Confidence.Store();
+        expect(() => {
 
             store.load({ $b: 3 });
         }).to.throw('Unknown $ directive $b');
@@ -204,95 +205,95 @@ describe('load()', function () {
     });
 });
 
-describe('validate()', function () {
+describe('validate()', () => {
 
-    it('fails on Error node', function (done) {
+    it('fails on Error node', (done) => {
 
-        var err = Confidence.Store.validate({ key: new Error() });
+        const err = Confidence.Store.validate({ key: new Error() });
         expect(err.message).to.equal('Invalid node object type');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on empty filter', function (done) {
+    it('fails on empty filter', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: '' } });
+        const err = Confidence.Store.validate({ key: { $filter: '' } });
         expect(err.message).to.equal('Invalid empty filter value');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on non-string filter', function (done) {
+    it('fails on non-string filter', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 3 } });
+        const err = Confidence.Store.validate({ key: { $filter: 3 } });
         expect(err.message).to.equal('Filter value must be a string');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on invalid filter', function (done) {
+    it('fails on invalid filter', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: '4$' } });
+        const err = Confidence.Store.validate({ key: { $filter: '4$' } });
         expect(err.message).to.equal('Invalid filter value 4$');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on invalid default', function (done) {
+    it('fails on invalid default', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $default: { $b: 5 } } });
+        const err = Confidence.Store.validate({ key: { $default: { $b: 5 } } });
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/$default');
         done();
     });
 
-    it('fails on unknown directive', function (done) {
+    it('fails on unknown directive', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $unknown: 'asd' } });
+        const err = Confidence.Store.validate({ key: { $unknown: 'asd' } });
         expect(err.message).to.equal('Unknown $ directive $unknown');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on invalid child node', function (done) {
+    it('fails on invalid child node', (done) => {
 
-        var err = Confidence.Store.validate({ key: { sub: { $b: 5 } } });
+        const err = Confidence.Store.validate({ key: { sub: { $b: 5 } } });
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/sub');
         done();
     });
 
-    it('fails on invalid value node', function (done) {
+    it('fails on invalid value node', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $value: { $b: 5 } } });
+        const err = Confidence.Store.validate({ key: { $value: { $b: 5 } } });
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/$value');
         done();
     });
 
-    it('fails on mix of value and other criteria', function (done) {
+    it('fails on mix of value and other criteria', (done) => {
 
-        var values = {
+        const values = {
             $filter: 'a',
             $default: '1',
             $range: [{ limit: 10, value: 4 }],
             a: 1
         };
-        var node = {
+        const node = {
             key: {
                 $value: 1
             }
         };
 
-        var keys = Object.keys(values);
+        const keys = Object.keys(values);
 
-        for (var i = 0, il = keys.length; i < il; ++i) {
-            var key = keys[i];
-            var value = values[key];
+        for (let i = 0; i < keys.length; ++i) {
+            const key = keys[i];
+            const value = values[key];
 
             node.key[key] = value;
 
-            var err = Confidence.Store.validate(node);
+            const err = Confidence.Store.validate(node);
             expect(err.message).to.equal('Value directive can only be used with meta or nothing');
             expect(err.path).to.equal('/key');
 
@@ -301,154 +302,154 @@ describe('validate()', function () {
         done();
     });
 
-    it('fails on default value without a filter', function (done) {
+    it('fails on default value without a filter', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $default: 1 } });
         expect(err.message).to.equal('Default value without a filter');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on filter without any value', function (done) {
+    it('fails on filter without any value', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: '1' } });
+        const err = Confidence.Store.validate({ key: { $filter: '1' } });
         expect(err.message).to.equal('Filter without any values');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on filter with only default', function (done) {
+    it('fails on filter with only default', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $default: 1 } });
         expect(err.message).to.equal('Filter with only a default');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on non-array range', function (done) {
+    it('fails on non-array range', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: {}, $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: {}, $default: 1 } });
         expect(err.message).to.equal('Range value must be an array');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on empty array range', function (done) {
+    it('fails on empty array range', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [], $default: 1 } });
         expect(err.message).to.equal('Range must include at least one value');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on non-object range array element', function (done) {
+    it('fails on non-object range array element', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [5], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [5], $default: 1 } });
         expect(err.message).to.equal('Invalid range entry type');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on range array element missing limit', function (done) {
+    it('fails on range array element missing limit', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{}], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{}], $default: 1 } });
         expect(err.message).to.equal('Range entry missing limit');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on range array element with non-number limit', function (done) {
+    it('fails on range array element with non-number limit', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 'a' }], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 'a' }], $default: 1 } });
         expect(err.message).to.equal('Range limit must be a number');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on out of order range array elements', function (done) {
+    it('fails on out of order range array elements', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 11, value: 2 }, { limit: 10, value: 6 }], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 11, value: 2 }, { limit: 10, value: 6 }], $default: 1 } });
         expect(err.message).to.equal('Range entries not sorted in ascending order - 10 cannot come after 11');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on range array element missing value', function (done) {
+    it('fails on range array element missing value', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1 }], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1 }], $default: 1 } });
         expect(err.message).to.equal('Range entry missing value');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on range array element with invalid value', function (done) {
+    it('fails on range array element with invalid value', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: { $b: 5 } }], $default: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: { $b: 5 } }], $default: 1 } });
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/$range[1]');
         done();
     });
 
-    it('fails on range without a filter', function (done) {
+    it('fails on range without a filter', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $range: [{ limit: 1, value: 1 }] } });
+        const err = Confidence.Store.validate({ key: { $range: [{ limit: 1, value: 1 }] } });
         expect(err.message).to.equal('Range without a filter');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on range with non-ranged values', function (done) {
+    it('fails on range with non-ranged values', (done) => {
 
-        var err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: 1 }], a: 1 } });
+        const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: 1 }], a: 1 } });
         expect(err.message).to.equal('Range with non-ranged values');
         expect(err.path).to.equal('/key');
         done();
     });
 
-    it('fails on invalid id', function (done) {
+    it('fails on invalid id', (done) => {
 
-        var err = Confidence.Store.validate({ key: 5, $id: 4 });
+        const err = Confidence.Store.validate({ key: 5, $id: 4 });
         expect(err.message).to.equal('Id value must be a non-empty string');
         expect(err.path).to.equal('/');
         done();
     });
 
-    it('fails on empty id', function (done) {
+    it('fails on empty id', (done) => {
 
-        var err = Confidence.Store.validate({ key: 5, $id: null });
+        const err = Confidence.Store.validate({ key: 5, $id: null });
         expect(err.message).to.equal('Id value must be a non-empty string');
         expect(err.path).to.equal('/');
         done();
     });
 
-    it('returns null with null as the node', function (done) {
+    it('returns null with null as the node', (done) => {
 
-        var err = Confidence.Store.validate(null);
+        const err = Confidence.Store.validate(null);
         expect(err).to.equal(null);
         done();
     });
 
-    it('returns null with undefined as the node', function (done) {
+    it('returns null with undefined as the node', (done) => {
 
-        var err = Confidence.Store.validate(undefined);
+        const err = Confidence.Store.validate(undefined);
         expect(err).to.equal(null);
         done();
     });
 
-    it('fails on node that is a Date object', function (done) {
+    it('fails on node that is a Date object', (done) => {
 
-        var err = Confidence.Store.validate(new Date());
+        const err = Confidence.Store.validate(new Date());
 
         expect(err.message).to.equal('Invalid node object type');
         done();
     });
 });
 
-describe('_logApplied', function () {
+describe('_logApplied', () => {
 
-    it('adds the filter to the list of applied filters if node or criteria is not defined ', function (done) {
+    it('adds the filter to the list of applied filters if node or criteria is not defined ', (done) => {
 
-        var applied = [];
+        const applied = [];
 
         Confidence.Store._logApplied(applied, { filter: 'env', valueId: '$default' });
         expect(applied.length).to.equal(1);
@@ -456,9 +457,9 @@ describe('_logApplied', function () {
     });
 });
 
-it('accepts a document object in the constructor', function (done) {
+it('accepts a document object in the constructor', (done) => {
 
-    var load = Confidence.Store.prototype.load;
+    const load = Confidence.Store.prototype.load;
 
     Confidence.Store.prototype.load = function (document) {
 

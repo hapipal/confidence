@@ -1,37 +1,38 @@
+'use strict';
 // Load modules
 
-var Code = require('code');
-var Lab = require('lab');
-var Confidence = require('../');
+const Code = require('code');
+const Lab = require('lab');
+const Confidence = require('../');
 
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
 // Test shortcuts
 
-var lab = exports.lab = Lab.script();
-var expect = Code.expect;
-var describe = lab.experiment;
-var it = lab.test;
+const lab = exports.lab = Lab.script();
+const expect = Code.expect;
+const describe = lab.experiment;
+const it = lab.test;
 
 
-describe('generate()', function () {
+describe('generate()', () => {
 
-    it('generates an id', function (done) {
+    it('generates an id', (done) => {
 
-        var id = Confidence.id.generate();
+        const id = Confidence.id.generate();
         expect(id.length).to.equal(36);
         done();
     });
 
-    it('generates 1000 unique ids', function (done) {
+    it('generates 1000 unique ids', (done) => {
 
-        var ids = {};
-        for (var i = 0; i < 1000; ++i) {
-            var id = Confidence.id.generate();
+        const ids = {};
+        for (let i = 0; i < 1000; ++i) {
+            const id = Confidence.id.generate();
             expect(ids[id]).to.not.exist();
             expect(id.length).to.equal(36);
             ids[id] = true;
@@ -40,12 +41,12 @@ describe('generate()', function () {
     });
 });
 
-describe('criteria()', function () {
+describe('criteria()', () => {
 
-    it('converts id to criteria', function (done) {
+    it('converts id to criteria', (done) => {
 
-        var id = 'a44f476c-1326-499e-9cf9-2111c31670d8';
-        var criteria = Confidence.id.criteria(id);
+        const id = 'a44f476c-1326-499e-9cf9-2111c31670d8';
+        const criteria = Confidence.id.criteria(id);
         expect(criteria.random.a).to.equal(22);
         expect(criteria.random.b).to.equal(17);
         expect(criteria.random.c).to.equal(68);
@@ -63,28 +64,27 @@ describe('criteria()', function () {
         done();
     });
 
-    it('returns null criteria on invalid id length', function (done) {
+    it('returns null criteria on invalid id length', (done) => {
 
-        var id = 'a44f476c-1326-499e-9cf9-2111c31670d';
-        var criteria = Confidence.id.criteria(id);
+        const id = 'a44f476c-1326-499e-9cf9-2111c31670d';
+        const criteria = Confidence.id.criteria(id);
         expect(criteria).to.equal(null);
         done();
     });
 
-    it('returns null criteria on out of range left random segment', function (done) {
+    it('returns null criteria on out of range left random segment', (done) => {
 
-        var id = 'a44f476c-1326-499e-9cf9-ffffff000000';
-        var criteria = Confidence.id.criteria(id);
+        const id = 'a44f476c-1326-499e-9cf9-ffffff000000';
+        const criteria = Confidence.id.criteria(id);
         expect(criteria).to.equal(null);
         done();
     });
 
-    it('returns null criteria on out of range right random segment', function (done) {
+    it('returns null criteria on out of range right random segment', (done) => {
 
-        var id = 'a44f476c-1326-499e-9cf9-000000ffffff';
-        var criteria = Confidence.id.criteria(id);
+        const id = 'a44f476c-1326-499e-9cf9-000000ffffff';
+        const criteria = Confidence.id.criteria(id);
         expect(criteria).to.equal(null);
         done();
     });
 });
-

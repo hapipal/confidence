@@ -1,29 +1,33 @@
+'use strict';
+
 // Load modules
 
-var ChildProcess = require('child_process');
-var Code = require('code');
-var Fs = require('fs');
-var Lab = require('lab');
-var Path = require('path');
+const ChildProcess = require('child_process');
+const Code = require('code');
+const Fs = require('fs');
+const Lab = require('lab');
+const Path = require('path');
 
 
 // Declare internals
 
-var internals = {};
+const internals = {};
 
 
 // Test shortcuts
 
-var lab = exports.lab = Lab.script();
-var expect = Code.expect;
-var before = lab.before;
-var after = lab.after;
-var it = lab.test;
+const lab = exports.lab = Lab.script();
+const expect = Code.expect;
+const describe = lab.experiment;
+const before = lab.before;
+const after = lab.after;
+const it = lab.test;
 
 
-var confidencePath = Path.join(__dirname, '../', '/bin', '/confidence');
-var configPath = Path.join(__dirname, '/config.json');
-var tree = {
+const confidencePath = Path.join(__dirname, '../', '/bin', '/confidence');
+const configPath = Path.join(__dirname, '/config.json');
+
+const tree = {
     // Fork
     key1: 'abc',                        // Value
     key2: {
@@ -76,93 +80,98 @@ var tree = {
     }
 };
 
-before(function (done) {
+describe('bin', () => {
 
-    var stream = Fs.createWriteStream(configPath);
-    stream.write(JSON.stringify(tree));
-    stream.end();
-    done();
-});
+    before((done) => {
 
+        const stream = Fs.createWriteStream(configPath);
+        stream.write(JSON.stringify(tree), 'utf8', () => {
 
-after(function (done) {
-
-    Fs.unlink(configPath, done);
-});
-
-it('generates the correct config', function (done) {
-
-    var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath]);
-
-    confidence.stdout.on('data', function (data) {
-
-        var result = data.toString();
-        var obj = JSON.parse('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
-        expect(result).to.equal(JSON.stringify(obj, null, 4));
-        confidence.kill();
-        done();
+            stream.end();
+            done();
+        });
     });
 
-    confidence.stderr.on('data', function (data) {
 
-        expect(data.toString()).to.not.exist();
-    });
-});
+    after((done) => {
 
-it('generates the correct config', function (done) {
-
-    var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production']);
-
-    confidence.stdout.on('data', function (data) {
-
-        var result = data.toString();
-        var obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
-        expect(result).to.equal(JSON.stringify(obj, null, 4));
-        confidence.kill();
-        done();
+        Fs.unlink(configPath, done);
     });
 
-    confidence.stderr.on('data', function (data) {
+    it('generates the correct config', (done) => {
 
-        expect(data.toString()).to.not.exist();
-    });
-});
+        const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath]);
 
-it('generates the correct config with custom indentation', function (done) {
+        confidence.stdout.on('data', (data) => {
 
-    var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 2]);
+            const result = data.toString();
+            const obj = JSON.parse('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            expect(result).to.equal(JSON.stringify(obj, null, 4));
+            confidence.kill();
+            done();
+        });
 
-    confidence.stdout.on('data', function (data) {
+        confidence.stderr.on('data', (data) => {
 
-        var result = data.toString();
-        var obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
-        expect(result).to.equal(JSON.stringify(obj, null, 2));
-        confidence.kill();
-        done();
-    });
-
-    confidence.stderr.on('data', function (data) {
-
-        expect(data.toString()).to.not.exist();
-    });
-});
-
-it('fails when custom indentation is not a number', function (done) {
-
-    var confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 'someString']);
-
-    confidence.stdout.on('data', function (data) {
-
-        expect(data.toString()).to.not.exist();
+            expect(data.toString()).to.not.exist();
+        });
     });
 
-    confidence.stderr.on('data', function (data) {
+    it('generates the correct config', (done) => {
 
-        expect(data.toString()).to.exist();
+        const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production']);
+
+        confidence.stdout.on('data', (data) => {
+
+            const result = data.toString();
+            const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            expect(result).to.equal(JSON.stringify(obj, null, 4));
+            confidence.kill();
+            done();
+        });
+
+        confidence.stderr.on('data', (data) => {
+
+            expect(data.toString()).to.not.exist();
+        });
     });
 
-    confidence.on('close', function () {
+    it('generates the correct config with custom indentation', (done) => {
 
-        done();
+        const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 2]);
+
+        confidence.stdout.on('data', (data) => {
+
+            const result = data.toString();
+            const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+            expect(result).to.equal(JSON.stringify(obj, null, 2));
+            confidence.kill();
+            done();
+        });
+
+        confidence.stderr.on('data', (data) => {
+
+            expect(data.toString()).to.not.exist();
+        });
+    });
+
+    it('fails when custom indentation is not a number', (done) => {
+
+        const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 'someString']);
+
+        confidence.stdout.on('data', (data) => {
+
+            expect(data.toString()).to.not.exist();
+        });
+
+        confidence.stderr.on('data', (data) => {
+
+            expect(data.toString()).to.exist();
+        });
+
+        confidence.on('close', () => {
+
+            done();
+        });
     });
 });

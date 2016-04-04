@@ -1,8 +1,10 @@
-var Confidence = require('../');
+'use strict';
+
+const Confidence = require('../');
 
 // Master configuration
 
-var master = {
+const master = {
     key1: 'abc',
     key2: {
         $filter: 'env',
@@ -20,15 +22,15 @@ var master = {
     }
 };
 
-var store = new Confidence.Store(master);
+const store = new Confidence.Store(master);
 
 // On first visit, generate a GUID for the client
 
-var guid = Confidence.id.generate();
+const guid = Confidence.id.generate();
 
 // When the client comes back requesting it's configuration, convert the id to a criteria object
 
-var criteria = Confidence.id.criteria(guid);
+const criteria = Confidence.id.criteria(guid);
 
 // Check if the id is valid (generated according to the even distribution randomness rules)
 
@@ -43,11 +45,9 @@ criteria.env = 'production';
 
 // Compile the client-specific configuration using the master and criteria
 
-var config = store.get('/', criteria);
+const config = store.get('/', criteria);
 
 // Return the config to the client
 
 console.log(config);
 process.exit(0);
-
-
