@@ -199,7 +199,7 @@ key value for `'/key3'` of `5`, and a criterion value of `50` will return a key 
 ### Metadata
 
 The configuration file can be annotated with metadata that is ignored (and removed) by the parser. Metadata is useful for human readable information as well as to
-enable other tools such as configuration editors and validators, going beyong the basic parsing specified here.
+enable other tools such as configuration editors and validators, going beyond the basic parsing specified here.
 
 ```json
 {
