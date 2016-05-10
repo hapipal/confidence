@@ -4,6 +4,7 @@
 const Code = require('code');
 const Lab = require('lab');
 const Confidence = require('../');
+const Fs = require('fs');
 
 // Declare internals
 
@@ -94,6 +95,11 @@ const tree = {
         production: { animal: 'chicken' },
         $base: [{ animal: 'cat' }]
     },
+    key10: {
+        $filter: 'env',
+        production: { animal: '!file:./res_prod.txt' },
+        $base: [{ animal: '!file:./res_default.txt' }]
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -114,7 +120,7 @@ const tree = {
 
 describe('get()', () => {
 
-    const store = new Confidence.Store();
+    let store = new Confidence.Store();
     store.load(tree);
 
     const get = function (key, result, criteria, applied) {
@@ -155,6 +161,22 @@ describe('get()', () => {
     get('/ab', 5, { random: { 1: 11 } });
     get('/ab', 5, { random: { 1: 19 } });
     get('/ab', 6, { random: { 1: 29 } });
+
+    it('get with replaceValue hook', (done) => {
+
+        store = new Confidence.Store(tree, {
+            replaceValue: (val) => {
+
+                if (val && typeof (val) === 'string' && val.startsWith('!file:')) {
+                    return Fs.readFileSync(`${process.cwd()}/test/${val.substring('!file:'.length)}`, 'utf-8');
+                }
+                return val;
+            }
+        });
+        get('/key10', { animal: 'chicken' }, { env: 'production' });
+        get('/key10', { animal: 'cat' }, { env: 'other' });
+        done();
+    });
 
     it('fails on invalid key', (done) => {
 
