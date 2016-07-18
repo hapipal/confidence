@@ -104,7 +104,7 @@ The result is:
 
 ### Basic structure
 
-The configuration document starts with a simple object. Key names can only contain alphanumeric characters and '_' with the '$' prefix reserved
+The configuration document starts with a simple object. Key names can only contain alphanumeric characters, '.', '-', and '_'. The '$' prefix reserved
 for special directives. Values can contain any non-object value (e.g. strings, numbers, booleans) as well as arrays.
 
 ```json
