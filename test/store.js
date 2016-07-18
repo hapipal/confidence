@@ -107,6 +107,14 @@ const tree = {
         ],
         $default: 6
     },
+    'dot.separated': {
+        $filter: 'env',
+        production: { animal: 'platypus' }
+    },
+    'with-hyphen': {
+        $filter: 'env',
+        production: { animal: 'aardvark' }
+    },
     $meta: {
         something: 'else'
     }
@@ -155,6 +163,8 @@ describe('get()', () => {
     get('/ab', 5, { random: { 1: 11 } });
     get('/ab', 5, { random: { 1: 19 } });
     get('/ab', 6, { random: { 1: 29 } });
+    get('/dot.separated', { animal: 'platypus' }, { env: 'production' });
+    get('/with-hyphen', { animal: 'aardvark' }, { env: 'production' });
 
     it('fails on invalid key', (done) => {
 
@@ -268,6 +278,14 @@ describe('validate()', () => {
         const err = Confidence.Store.validate({ key: { $value: { $b: 5 } } });
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/$value');
+        done();
+    });
+
+    it('fails on invalid key character', (done) => {
+
+        const err = Confidence.Store.validate({ key: { 'foo%bar': 5 } });
+        expect(err.message).to.equal('Invalid character in key foo%bar');
+        expect(err.path).to.equal('/key');
         done();
     });
 
