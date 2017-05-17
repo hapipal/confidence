@@ -94,6 +94,33 @@ const tree = {
         production: { animal: 'chicken' },
         $base: [{ animal: 'cat' }]
     },
+    key_10: {
+        $filter: 'env',
+        production: 13,
+        $default: 42
+    },
+    'key-11': {
+        $filter: 'language',
+        js: {
+            compiled: false
+        },
+        'c++': {
+            compiled: true
+        }
+    },
+    'key#12': {
+        deeper: {
+            $value: 'value'
+        },
+        '->deeper': {
+            $filter: 'env',
+            production: [
+                { animal: 'chicken' },
+                { animal: 'dog' }
+            ],
+            $base: { animal: 'cat' }
+        }
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -147,8 +174,14 @@ describe('get()', () => {
     get('/key7', [{ animal: 'cat' },{ animal: 'cow' }], { env: 'staging' });
     get('/key8', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
     get('/key9', { animal: 'chicken' }, { env: 'production' });
-    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 });
-    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { xfactor: 'yes' });
+    get('/key_10', 13,{ env: 'production' });
+    get('/key_10', 42);
+    get('/key-11', { compiled: true },{ language: 'c++' });
+    get('/key-11', { compiled: false },{ language: 'js' });
+    get('/key#12/deeper', 'value');
+    get('/key#12/->deeper', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
+    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, key_10: 42, 'key#12': { deeper: 'value' }, noProto: {}, ab: 6 });
+    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, key_10: 42, 'key#12': { deeper: 'value' }, noProto: {}, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '{"$value":2}', filterId: 'random_ab_test' }]);
     get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
     get('/ab', 4, { random: { 1: 9 } });
