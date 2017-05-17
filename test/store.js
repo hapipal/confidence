@@ -265,6 +265,14 @@ describe('validate()', () => {
         done();
     });
 
+    it('fails on invalid key name', (done) => {
+
+        const err = Confidence.Store.validate({ key: { '/pathkey': 1 } });
+        expect(err.message).to.equal('Invalid key name `/pathkey`');
+        expect(err.path).to.equal('/key');
+        done();
+    });
+
     it('fails on invalid filter', (done) => {
 
         const err = Confidence.Store.validate({ key: { $filter: '4$' } });
