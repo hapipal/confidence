@@ -25,7 +25,7 @@ const it = lab.test;
 
 
 const confidencePath = Path.join(__dirname, '../', '/bin', '/confidence');
-const configPath = Path.join(__dirname, '/config.json');
+const configPath = 'test/config.json';
 
 const tree = {
     // Fork
