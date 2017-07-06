@@ -163,6 +163,13 @@ describe('get()', () => {
         expect(value).to.equal(undefined);
         done();
     });
+
+    it('returns a valid object on undefined key', (done) => {
+
+        const value = store.get( undefined );
+        expect(value).to.be.an.object();
+        done();
+    });
 });
 
 describe('meta()', () => {
