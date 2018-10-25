@@ -21,14 +21,13 @@ const it = lab.test;
 
 describe('generate()', () => {
 
-    it('generates an id', (done) => {
+    it('generates an id', () => {
 
         const id = Confidence.id.generate();
         expect(id.length).to.equal(36);
-        done();
     });
 
-    it('generates 1000 unique ids', (done) => {
+    it('generates 1000 unique ids', () => {
 
         const ids = {};
         for (let i = 0; i < 1000; ++i) {
@@ -37,13 +36,12 @@ describe('generate()', () => {
             expect(id.length).to.equal(36);
             ids[id] = true;
         }
-        done();
     });
 });
 
 describe('criteria()', () => {
 
-    it('converts id to criteria', (done) => {
+    it('converts id to criteria', () => {
 
         const id = 'a44f476c-1326-499e-9cf9-2111c31670d8';
         const criteria = Confidence.id.criteria(id);
@@ -61,30 +59,26 @@ describe('criteria()', () => {
         expect(criteria.random.l).to.equal(69);
         expect(criteria.random.m).to.equal(81);
         expect(criteria.random.n).to.equal(3);
-        done();
     });
 
-    it('returns null criteria on invalid id length', (done) => {
+    it('returns null criteria on invalid id length', () => {
 
         const id = 'a44f476c-1326-499e-9cf9-2111c31670d';
         const criteria = Confidence.id.criteria(id);
         expect(criteria).to.equal(null);
-        done();
     });
 
-    it('returns null criteria on out of range left random segment', (done) => {
+    it('returns null criteria on out of range left random segment', () => {
 
         const id = 'a44f476c-1326-499e-9cf9-ffffff000000';
         const criteria = Confidence.id.criteria(id);
         expect(criteria).to.equal(null);
-        done();
     });
 
-    it('returns null criteria on out of range right random segment', (done) => {
+    it('returns null criteria on out of range right random segment', () => {
 
         const id = 'a44f476c-1326-499e-9cf9-000000ffffff';
         const criteria = Confidence.id.criteria(id);
         expect(criteria).to.equal(null);
-        done();
     });
 });

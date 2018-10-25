@@ -16,6 +16,9 @@ Lead Maintainer: [Patrick Kettner](https://github.com/patrickkettner)
     - [Metadata](#metadata)
 - [API](#api)
 
+Confidence 4.0.0 uses async/await and thefore needs `node >=7.6.0`. 
+To get Confidence on previous versions of node, use 3.x.x.
+
 # Example
 
 ```json

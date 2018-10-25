@@ -80,25 +80,29 @@ const tree = {
     }
 };
 
-describe('bin', () => {
+describe('bin', async () => {
 
-    before((done) => {
+    await before(() => {
 
         const stream = Fs.createWriteStream(configPath);
         stream.write(JSON.stringify(tree), 'utf8', () => {
 
             stream.end();
-            done();
         });
     });
 
 
-    after((done) => {
+    await after(() => {
 
-        Fs.unlink(configPath, done);
+        Fs.unlink(configPath, (err) => {
+
+            if (err) {
+                throw err;
+            }
+        });
     });
 
-    it('generates the correct config', (done) => {
+    it('generates the correct config', () => {
 
         const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath]);
 
@@ -108,7 +112,6 @@ describe('bin', () => {
             const obj = JSON.parse('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
             expect(result).to.equal(JSON.stringify(obj, null, 4));
             confidence.kill();
-            done();
         });
 
         confidence.stderr.on('data', (data) => {
@@ -117,7 +120,7 @@ describe('bin', () => {
         });
     });
 
-    it('generates the correct config', (done) => {
+    it('generates the correct config', () => {
 
         const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production']);
 
@@ -127,7 +130,6 @@ describe('bin', () => {
             const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
             expect(result).to.equal(JSON.stringify(obj, null, 4));
             confidence.kill();
-            done();
         });
 
         confidence.stderr.on('data', (data) => {
@@ -136,7 +138,7 @@ describe('bin', () => {
         });
     });
 
-    it('generates the correct config with custom indentation', (done) => {
+    it('generates the correct config with custom indentation', () => {
 
         const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 2]);
 
@@ -146,7 +148,6 @@ describe('bin', () => {
             const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
             expect(result).to.equal(JSON.stringify(obj, null, 2));
             confidence.kill();
-            done();
         });
 
         confidence.stderr.on('data', (data) => {
@@ -155,7 +156,7 @@ describe('bin', () => {
         });
     });
 
-    it('fails when custom indentation is not a number', (done) => {
+    it('fails when custom indentation is not a number', () => {
 
         const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 'someString']);
 
@@ -171,7 +172,6 @@ describe('bin', () => {
 
         confidence.on('close', () => {
 
-            done();
         });
     });
 });
