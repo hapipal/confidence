@@ -13,11 +13,9 @@ const Confidence = require('../');
 
 const internals = {};
 
-
 internals.checkArguments = function (argv) {
     return typeof argv.indentation === 'number';
-}
-
+};
 
 internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value]')
                     .demand(['c'])
@@ -28,36 +26,47 @@ internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value
                     .check(internals.checkArguments)
                     .argv;
 
-
 internals.getConfig = function () {
 
-    let config = null;
     const configPath = !internals.argv.c.startsWith('/') ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
 
+    return new Promise((resolve, reject) => {
+
+        Fs.readFile(configPath, (err, data) => {
+
+            if (err) {
+                return reject(err);
+            }
+            try {
+                const config = Alce.parse(data);
+                return resolve(config);
+            }
+            catch (err) {
+                return reject(err);
+            }
+        });
+    });
+};
+
+
+internals.generate = async () => {
+
     try {
-        config = Alce.parse(Fs.readFileSync(configPath));
+        const config = await internals.getConfig();
+        const store = new Confidence.Store(config);
+        const set = store.get('/', internals.argv.filter);
+        const indentation = internals.argv.indentation;
+    
+        if (!set) {
+            process.stderr.write('Failed to generate document');
+        }
+    
+        process.stdout.write(JSON.stringify(set, null, indentation));
     }
     catch (err) {
         console.log('Failed loading configuration file: ' + internals.argv.c + ' (' + err.message + ')');
         process.exit(1);
     }
-
-    return config;
-}
-
-
-internals.generate = function () {
-
-    const config = internals.getConfig();
-    const store = new Confidence.Store(config);
-    const set = store.get('/', internals.argv.filter);
-    const indentation = internals.argv.indentation;
-
-    if (!set) {
-        process.stderr.write('Failed to generate document');
-    }
-
-    process.stdout.write(JSON.stringify(set, null, indentation));
 };
 
 internals.generate();
