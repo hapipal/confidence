@@ -8,6 +8,21 @@ const Lab = require('lab');
 
 const internals = {};
 
+internals.replaceEnv = (obj) => {
+
+    const replaced = {};
+    for (const key in obj) {
+        if (obj[key]) {
+            replaced[key] = process.env[key] ? process.env[key] : null;
+            process.env[key] = obj[key];
+        }
+        else {
+            delete process.env[key];
+        }
+    }
+
+    return replaced;
+};
 
 // Test shortcuts
 
@@ -17,7 +32,7 @@ const expect = Code.expect;
 
 const tree = {
     // Fork
-    key1: 'abc',                        // Value
+    key1: '$env.KEY1',                  // Value
     key2: {
         // Filter
         $filter: 'env',
@@ -53,10 +68,10 @@ const tree = {
     key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
     key5: {},
     key6: {
-        $filter: 'env',
+        $filter: '$env.NODE_ENV',
         production: {
             animal: 'chicken',
-            color: 'orange'
+            color: '$env.COLOR'
         },
         staging: {
             animal: 'cow'
@@ -115,43 +130,48 @@ describe('get()', () => {
     const store = new Confidence.Store();
     store.load(tree);
 
-    const get = function (key, result, criteria, applied) {
+    const get = function (key, result, env, criteria, applied) {
 
         it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), () => {
 
+            const originalEnv = internals.replaceEnv(env);
             const resultApplied = [];
             const value = store.get(key, criteria, applied ? resultApplied : null);
             expect(value).to.equal(result);
             if (applied) {
                 expect(resultApplied).to.equal(applied);
             }
+
+            internals.replaceEnv(originalEnv);
         });
     };
 
-    get('/key1', 'abc');
-    get('/key2', 2, null, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: '$default' }]);
-    get('/key2', 1, { platform: 'ios' }, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: 'ios' }]);
-    get('/key2', false, { platform: 'android' });
-    get('/key2', 2, { platform: 'else' });
-    get('/key2/deeper', 'value', { env: 'production' });
-    get('/key2/deeper', undefined, { env: 'qa' });
-    get('/key2/deeper', undefined);
-    get('/key5', {});
-    get('/key6', { animal: 'chicken', color: 'orange' }, { env: 'production' });
-    get('/key6', { color: 'red', animal: 'cow' }, { env: 'staging' });
-    get('/key7', [{ animal: 'cat' },{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
-    get('/key7', [{ animal: 'cat' },{ animal: 'cow' }], { env: 'staging' });
-    get('/key8', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
-    get('/key9', { animal: 'chicken' }, { env: 'production' });
-    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 });
-    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { xfactor: 'yes' });
-    get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
-    get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
-    get('/ab', 4, { random: { 1: 9 } });
-    get('/ab', 4, { random: { 1: 10 } }, [{ filter: 'random.1', valueId: '4', filterId: 'random_ab_test' }]);
-    get('/ab', 5, { random: { 1: 11 } });
-    get('/ab', 5, { random: { 1: 19 } });
-    get('/ab', 6, { random: { 1: 29 } });
+    get('/key1', undefined);
+    get('/key1', 'abc', { KEY1: 'abc' });
+    get('/key2', 2, {}, null, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: '$default' }]);
+    get('/key2', 1, {}, { platform: 'ios' }, [{ filter: 'env', valueId: '$default' }, { filter: 'platform', valueId: 'ios' }]);
+    get('/key2', false, {}, { platform: 'android' });
+    get('/key2', 2, {}, { platform: 'else' });
+    get('/key2/deeper', 'value', {}, { env: 'production' });
+    get('/key2/deeper', undefined, {}, { env: 'qa' });
+    get('/key2/deeper', undefined, {});
+    get('/key5', {}, {});
+    get('/key6', { animal: 'chicken', color: 'orange' }, { NODE_ENV: 'production', COLOR: 'orange' });
+    get('/key6', { color: 'red', animal: 'cow' }, { NODE_ENV: 'staging' });
+    get('/key7', [{ animal: 'cat' },{ animal: 'chicken' },{ animal: 'dog' }], {}, { env: 'production' });
+    get('/key7', [{ animal: 'cat' },{ animal: 'cow' }], {}, { env: 'staging' });
+    get('/key8', [{ animal: 'chicken' },{ animal: 'dog' }], {}, { env: 'production' });
+    get('/key9', { animal: 'chicken' }, {}, { env: 'production' });
+    get('/', { key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, {});
+    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { KEY1: 'abc' });
+    get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { KEY1: 'abc' }, { xfactor: 'yes' });
+    get('/ab', 2, {}, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
+    get('/ab', { a: 5 }, {}, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
+    get('/ab', 4, {}, { random: { 1: 9 } });
+    get('/ab', 4, {}, { random: { 1: 10 } }, [{ filter: 'random.1', valueId: '4', filterId: 'random_ab_test' }]);
+    get('/ab', 5, {}, { random: { 1: 11 } });
+    get('/ab', 5, {}, { random: { 1: 19 } });
+    get('/ab', 6, {}, { random: { 1: 29 } });
 
     it('fails on invalid key', () => {
 

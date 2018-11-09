@@ -14,6 +14,7 @@ Lead Maintainer: [Patrick Kettner](https://github.com/patrickkettner)
 - [Document Format](#document-format)
     - [Basic Structure](#basic-structure)
     - [Filters](#filters)
+    - [Enviroment Variables](#environment-variables)
     - [Ranges](#ranges)
     - [Metadata](#metadata)
 - [API](#api)
@@ -24,7 +25,7 @@ Lead Maintainer: [Patrick Kettner](https://github.com/patrickkettner)
 {
     "key1": "abc",
     "key2": {
-        "$filter": "env",
+        "$filter": "$env.NODE_ENV",
         "production": {
             "deeper": {
                 "$value": "value"
@@ -71,11 +72,10 @@ Without any criteria applied, the above configuration document will result in th
 }
 ```
 
-With the following criteria applied:
+With the environment variable `NODE_ENV` set to `production` and following criteria applied:
 
 ```json
 {
-    "env": "production",
     "platform": "ios",
     "xfactor": "yes",
     "random": {
@@ -167,6 +167,66 @@ Filters can have a default value which will be used if the provided criteria set
         "$filter": "system.env",
         "production": 1,
         "$default": 2
+    }
+}
+```
+
+### Environment Variables
+
+Confidence allows you to refer to environment variables in filters and values using `$env`.
+
+```json
+{
+    "mysql": {
+        "$filter": "$env.NODE_ENV",
+        "development": {
+            "host": "127.0.0.1",
+            "port": 3306,
+            "user": "user",
+            "password": "password"
+        },
+        "$default": {
+            "host": "$env.MYSQL_HOST",
+            "port": "$env.MYSQL_PORT",
+            "user": "$env.MYSQL_USER",
+            "password": "$env.MYSQL_PASSWORD"
+        }
+    }
+}
+```
+
+For `NODE_ENV` set to `development`, the result is:
+
+```json
+{
+    "mysql": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "user",
+        "password": "password"
+    }
+}
+```
+
+For following environment variables 
+
+```sh
+NODE_ENV=production
+MYSQL_HOST=xxx.xxx.xxx.xxx
+MYSQL_PORT=3306
+MYSQL_USER=user1
+MYSQL_PASSWORD=some_password
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": 3306,
+        "user": "user1",
+        "password": "some_password"
     }
 }
 ```
@@ -339,7 +399,7 @@ var store = new Confidence.Store();
 Validates the provided configuration, clears any existing configuration, then loads the configuration where:
 
 - `document` - an object containing a **confidence** configuration object generated from a parsed JSON document.
-  If the document is invlaid, will throw an error.
+  If the document is invalid, will throw an error.
 
 ```javascript
 var document = {

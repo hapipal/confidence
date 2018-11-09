@@ -13,16 +13,10 @@ const Path = require('path');
 
 const internals = {};
 
-
 // Test shortcuts
 
-const lab = exports.lab = Lab.script();
+const { describe, it, before, after } = exports.lab = Lab.script();
 const expect = Code.expect;
-const describe = lab.experiment;
-const before = lab.before;
-const after = lab.after;
-const it = lab.test;
-
 
 const confidencePath = Path.join(__dirname, '../', '/bin', '/confidence');
 const configPath = Path.join(__dirname, '/config.json');
