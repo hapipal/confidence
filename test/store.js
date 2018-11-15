@@ -202,6 +202,7 @@ describe('validate()', () => {
     it('fails on Error node', () => {
 
         const err = Confidence.Store.validate({ key: new Error() });
+        expect(err).to.exist();
         expect(err.message).to.equal('Invalid node object type');
         expect(err.path).to.equal('/key');
     });
@@ -209,13 +210,15 @@ describe('validate()', () => {
     it('fails on empty filter', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: '' } });
-        expect(err.message).to.equal('Invalid empty filter value');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Filter value cannot be empty');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on non-string filter', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 3 } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Filter value must be a string');
         expect(err.path).to.equal('/key');
     });
@@ -223,13 +226,15 @@ describe('validate()', () => {
     it('fails on invalid filter', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: '4$' } });
-        expect(err.message).to.equal('Invalid filter value 4$');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Invalid Filter value 4$');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on invalid default', () => {
 
         const err = Confidence.Store.validate({ key: { $default: { $b: 5 } } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/$default');
     });
@@ -237,6 +242,7 @@ describe('validate()', () => {
     it('fails on unknown directive', () => {
 
         const err = Confidence.Store.validate({ key: { $unknown: 'asd' } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Unknown $ directive $unknown');
         expect(err.path).to.equal('/key');
     });
@@ -244,6 +250,7 @@ describe('validate()', () => {
     it('fails on invalid child node', () => {
 
         const err = Confidence.Store.validate({ key: { sub: { $b: 5 } } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/sub');
     });
@@ -251,6 +258,7 @@ describe('validate()', () => {
     it('fails on invalid value node', () => {
 
         const err = Confidence.Store.validate({ key: { $value: { $b: 5 } } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Unknown $ directive $b');
         expect(err.path).to.equal('/key/$value');
     });
@@ -278,6 +286,7 @@ describe('validate()', () => {
             node.key[key] = value;
 
             const err = Confidence.Store.validate(node);
+            expect(err).to.exist();
             expect(err.message).to.equal('Value directive can only be used with meta or nothing');
             expect(err.path).to.equal('/key');
 
@@ -288,13 +297,15 @@ describe('validate()', () => {
     it('fails on default value without a filter', () => {
 
         const err = Confidence.Store.validate({ key: { $default: 1 } });
-        expect(err.message).to.equal('Default value without a filter');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Default value without a Filter');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on filter without any value', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: '1' } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Filter without any values');
         expect(err.path).to.equal('/key');
     });
@@ -302,13 +313,15 @@ describe('validate()', () => {
     it('fails on filter with only default', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $default: 1 } });
-        expect(err.message).to.equal('Filter with only a default');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Filter without any values');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on non-array range', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: {}, $default: 1 } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Range value must be an array');
         expect(err.path).to.equal('/key');
     });
@@ -316,62 +329,71 @@ describe('validate()', () => {
     it('fails on empty array range', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [], $default: 1 } });
-        expect(err.message).to.equal('Range must include at least one value');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Range cannot be empty');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on non-object range array element', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [5], $default: 1 } });
-        expect(err.message).to.equal('Invalid range entry type');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Invalid Range value');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on range array element missing limit', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{}], $default: 1 } });
-        expect(err.message).to.equal('Range entry missing limit');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Missing Range Limit value');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on range array element with non-number limit', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 'a' }], $default: 1 } });
-        expect(err.message).to.equal('Range limit must be a number');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Range Limit must be a number');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on out of order range array elements', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 11, value: 2 }, { limit: 10, value: 6 }], $default: 1 } });
-        expect(err.message).to.equal('Range entries not sorted in ascending order - 10 cannot come after 11');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Range entries not sorted in ascending order');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on range array element missing value', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1 }], $default: 1 } });
-        expect(err.message).to.equal('Range entry missing value');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Missing Range Value value');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on range array element with invalid value', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: { $b: 5 } }], $default: 1 } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Unknown $ directive $b');
-        expect(err.path).to.equal('/key/$range[1]');
+        expect(err.path).to.equal('/key/$range/0/value');
     });
 
     it('fails on range without a filter', () => {
 
         const err = Confidence.Store.validate({ key: { $range: [{ limit: 1, value: 1 }] } });
-        expect(err.message).to.equal('Range without a filter');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Range value without a Filter');
         expect(err.path).to.equal('/key');
     });
 
     it('fails on range with non-ranged values', () => {
 
         const err = Confidence.Store.validate({ key: { $filter: 'a', $range: [{ limit: 1, value: 1 }], a: 1 } });
+        expect(err).to.exist();
         expect(err.message).to.equal('Range with non-ranged values');
         expect(err.path).to.equal('/key');
     });
@@ -379,14 +401,16 @@ describe('validate()', () => {
     it('fails on invalid id', () => {
 
         const err = Confidence.Store.validate({ key: 5, $id: 4 });
-        expect(err.message).to.equal('Id value must be a non-empty string');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Id value must be a string');
         expect(err.path).to.equal('/');
     });
 
     it('fails on empty id', () => {
 
         const err = Confidence.Store.validate({ key: 5, $id: null });
-        expect(err.message).to.equal('Id value must be a non-empty string');
+        expect(err).to.exist();
+        expect(err.message).to.equal('Id value must be a string');
         expect(err.path).to.equal('/');
     });
 
@@ -406,6 +430,7 @@ describe('validate()', () => {
 
         const err = Confidence.Store.validate(new Date());
 
+        expect(err).to.exist();
         expect(err.message).to.equal('Invalid node object type');
     });
 });
