@@ -91,6 +91,9 @@ const tree = {
         production: { animal: 'chicken' },
         $base: [{ animal: 'cat' }]
     },
+    key10: {
+        $param: 'a.b'
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -143,6 +146,8 @@ describe('get()', () => {
     get('/key7', [{ animal: 'cat' },{ animal: 'cow' }], { env: 'staging' });
     get('/key8', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
     get('/key9', { animal: 'chicken' }, { env: 'production' });
+    get('/key10', undefined);
+    get('/key10', 123, { a: { b: 123 } });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 });
     get('/', { key1: 'abc', key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
@@ -288,6 +293,37 @@ describe('validate()', () => {
             const err = Confidence.Store.validate(node);
             expect(err).to.exist();
             expect(err.message).to.equal('Value directive can only be used with meta or nothing');
+            expect(err.path).to.equal('/key');
+
+        }
+
+    });
+
+    it('fails on mix of param and other criteria', () => {
+
+        const values = {
+            $filter: 'a',
+            $default: '1',
+            $range: [{ limit: 10, value: 4 }],
+            a: 1
+        };
+        const node = {
+            key: {
+                $param: 'a.b'
+            }
+        };
+
+        const keys = Object.keys(values);
+
+        for (let i = 0; i < keys.length; ++i) {
+            const key = keys[i];
+            const value = values[key];
+
+            node.key[key] = value;
+
+            const err = Confidence.Store.validate(node);
+            expect(err).to.exist();
+            expect(err.message).to.equal('Param directive can only be used with meta or nothing');
             expect(err.path).to.equal('/key');
 
         }
