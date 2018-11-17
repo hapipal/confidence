@@ -343,7 +343,7 @@ With following `criteria`:
 
 ```json
 {
-    "crendentials": {
+    "credentials": {
         "mysql": {
             "host": "xxx.xxx.xxx.xxx",
             "port": null,
