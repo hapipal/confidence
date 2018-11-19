@@ -13,10 +13,17 @@ Lead Maintainer: [Sunny Bhanot](https://github.com/augnin)
 - [Example](#example)
 - [Document Format](#document-format)
     - [Basic Structure](#basic-structure)
+    - [Environment Variables](#environment-variables)
+    - [Criteria Parameters](#criteria-parameters)
     - [Filters](#filters)
     - [Ranges](#ranges)
     - [Metadata](#metadata)
 - [API](#api)
+    - [Store](#confidencestore)
+        - [new Store(document)](#new-storedocument)
+        - [store.load(document)](#storeloaddocument)
+        - [store.get(key, [criteria])](#storegetkey-criteria)
+        - [store.meta(key, [criteria])](#storemetakey-criteria)
 
 # Example
 
@@ -128,6 +135,241 @@ Keys can have children:
 }
 ```
 
+### Environment Variables
+
+In many scenarios, configuration documents may need to pull values fron environment variables. Confidence allows you to refer to environment variables using `$env` directive.
+
+```json
+{
+    "mysql": {
+        "host": { "$env" : "MYSQL_HOST" },
+        "port": { "$env" : "MYSQL_PORT" },
+        "user": { "$env" : "MYSQL_USER" },
+        "password": { "$env" : "MYSQL_PASSWORD" },
+        "database": { "$env" : "MYSQL_DATABASE" },
+    }
+}
+```
+
+With following Enviornment Variables:
+
+```sh
+MYSQL_HOST=xxx.xxx.xxx.xxx
+MYSQL_PORT=3306
+MYSQL_USER=user1
+MYSQL_PASSWORD=some_password
+MYSQL_DATABASE=live_db
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": "3306",
+        "user": "user1",
+        "password": "some_password",
+        "database": "live_db"
+    }
+}
+```
+
+`$default` directive allows to fallback to default values in case an environment variable is not set.
+
+```json
+{
+    "mysql": {
+        "host": { "$env" : "MYSQL_HOST" },
+        "port": { "$env" : "MYSQL_PORT", "$default": 3306 },
+        "user": { "$env" : "MYSQL_USER" },
+        "password": { "$env" : "MYSQL_PASSWORD" },
+        "database": { "$env" : "MYSQL_DATABASE" },
+    }
+}
+```
+
+With following Enviornment Variables:
+
+```sh
+MYSQL_HOST=xxx.xxx.xxx.xxx
+MYSQL_USER=user1
+MYSQL_PASSWORD=some_password
+MYSQL_DATABASE=live_db
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": 3306,
+        "user": "user1",
+        "password": "some_password",
+        "database": "live_db"
+    }
+}
+```
+
+`$coerce` directive allows you to coerce values to different types. In case the coercing fails, it falls back to `$default` directive, if present. Otherwise it return `undefined`.
+
+```json
+{
+    "mysql": {
+        "host": { "$env" : "MYSQL_HOST" },
+        "port": {
+            "$env" : "MYSQL_PORT",
+            "$coerce": "number",
+            "$default": 3306
+        },
+        "user": { "$env" : "MYSQL_USER" },
+        "password": { "$env" : "MYSQL_PASSWORD" },
+        "database": { "$env" : "MYSQL_DATABASE" },
+    }
+}
+```
+
+With following Enviornment Variables:
+
+```sh
+MYSQL_HOST=xxx.xxx.xxx.xxx
+MYSQL_PORT=3316
+MYSQL_USER=user1
+MYSQL_PASSWORD=some_password
+MYSQL_DATABASE=live_db
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": 3316,
+        "user": "user1",
+        "password": "some_password",
+        "database": "live_db"
+    }
+}
+```
+With following Enviornment Variables:
+
+```sh
+MYSQL_HOST=xxx.xxx.xxx.xxx
+MYSQL_PORT=unknown
+MYSQL_USER=user1
+MYSQL_PASSWORD=some_password
+MYSQL_DATABASE=live_db
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": 3306,
+        "user": "user1",
+        "password": "some_password",
+        "database": "live_db"
+    }
+}
+```
+
+
+### Criteria Parameters
+
+In many scenarios, configuration documents may need to pull values fron `criteria`. Confidence allows you to refer to `criteria` using `$param` directive.
+
+```json
+{
+    "mysql": {
+        "host": { "$param" : "credentials.mysql.host" },
+        "port": { "$param" : "credentials.mysql.port" },
+        "user": { "$param" : "credentials.mysql.user" },
+        "password": { "$param" : "credentials.mysql.password" },
+        "database": { "$param" : "credentials.mysql.database" },
+    }
+}
+```
+
+With following `criteria`:
+
+```json
+{
+    "crendentials": {
+        "mysql": {
+            "host": "xxx.xxx.xxx.xxx",
+            "port": 3306,
+            "user": "user1",
+            "password": "some_password",
+            "database": "live_db"
+        }
+    }
+}
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": "3306",
+        "user": "user1",
+        "password": "some_password",
+        "database": "live_db"
+    }
+}
+```
+
+`$default` directive allows to fallback to default values in case a criteria is `undefined` or `null`.
+
+```json
+{
+    "mysql": {
+        "host": { "$param" : "credentials.mysql.host" },
+        "port": { "$param" : "credentials.mysql.port", "$default": 3306 },
+        "user": { "$param" : "credentials.mysql.user" },
+        "password": { "$param" : "credentials.mysql.password" },
+        "database": { "$param" : "credentials.mysql.database" },
+    }
+}
+
+```
+
+With following `criteria`:
+
+```json
+{
+    "credentials": {
+        "mysql": {
+            "host": "xxx.xxx.xxx.xxx",
+            "port": null,
+            "user": "user1",
+            "password": "some_password",
+            "database": "live_db"
+        }
+    }
+}
+```
+
+The result is:
+
+```json
+{
+    "mysql": {
+        "host": "xxx.xxx.xxx.xxx",
+        "port": 3306,
+        "user": "user1",
+        "password": "some_password",
+        "database": "live_db"
+    }
+}
+```
+
+
 ### Filters
 
 A key can have multiple values based on a filter. The filter is a key provided in a criteria object at the time of retrieval. Filter names can only
@@ -167,6 +409,34 @@ Filters can have a default value which will be used if the provided criteria set
         "$filter": "system.env",
         "production": 1,
         "$default": 2
+    }
+}
+```
+Filters can also refer to environment variables using `$env` directive.
+
+```json
+{
+    "key1": "abc",
+    "key2": {
+        "$filter": { "$env": "NODE_ENV" },
+        "production": {
+            "host": { "$env" : "MYSQL_HOST" },
+            "port": {
+                "$env" : "MYSQL_PORT",
+                "$coerce": "number",
+                "$default": 3306
+            },
+            "user": { "$env" : "MYSQL_USER" },
+            "password": { "$env" : "MYSQL_PASSWORD" },
+            "database": { "$env" : "MYSQL_DATABASE" },
+        },
+        "$default": {
+            "host": "127.0.0.1",
+            "port": 3306,
+            "user": "dev",
+            "password": "password",
+            "database": "dev_db"
+        }
     }
 }
 ```
@@ -329,9 +599,9 @@ Creates an empty configuration storage container where:
   If the document is invalid, will throw an error. Defaults to `{}`.
 
 ```javascript
-var Confidence = require('confidence');
+const Confidence = require('confidence');
 
-var store = new Confidence.Store();
+const store = new Confidence.Store();
 ```
 
 ### store.load(document)
@@ -339,10 +609,10 @@ var store = new Confidence.Store();
 Validates the provided configuration, clears any existing configuration, then loads the configuration where:
 
 - `document` - an object containing a **confidence** configuration object generated from a parsed JSON document.
-  If the document is invlaid, will throw an error.
+  If the document is invalid, will throw an error.
 
 ```javascript
-var document = {
+const document = {
     a: 1,
     b: 2,
     c: {
@@ -366,7 +636,7 @@ Retrieves a value from the configuration document after applying the provided cr
 Returns the value found after applying the criteria. If the key is invalid or not found, returns undefined.
 
 ```javascript
-var value = store.get('/c', { size: 'big' });
+const value = store.get('/c', { size: 'big' });
 ```
 
 ### store.meta(key, [criteria])
@@ -379,5 +649,5 @@ Retrieves the metadata (if any) from the configuration document after applying t
 Returns the metadata found after applying the criteria. If the key is invalid or not found, or if no metadata is available, returns undefined.
 
 ```javascript
-var value = store.meta('/c', { size: 'big' });
+const value = store.meta('/c', { size: 'big' });
 ```
