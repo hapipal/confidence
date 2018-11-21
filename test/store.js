@@ -322,6 +322,12 @@ describe('validate()', () => {
         const err = Confidence.Store.validate(undefined);
         expect(err).to.equal(null);
     });
+
+    it('returns null with function in a node', () => {
+
+        const err = Confidence.Store.validate({ func: () => {} });
+        expect(err).to.equal(null);
+    });
 });
 
 describe('_logApplied', () => {
