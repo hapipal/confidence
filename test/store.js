@@ -133,6 +133,33 @@ const tree = {
             $default: 3000
         }
     },
+    key_12: {
+        $filter: 'env',
+        production: 13,
+        $default: 42
+    },
+    'key-13': {
+        $filter: 'language',
+        js: {
+            compiled: false
+        },
+        'c++': {
+            compiled: true
+        }
+    },
+    'key#14': {
+        deeper: {
+            $value: 'value'
+        },
+        '->deeper': {
+            $filter: 'env',
+            production: [
+                { animal: 'chicken' },
+                { animal: 'dog' }
+            ],
+            $base: { animal: 'cat' }
+        }
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -194,8 +221,14 @@ describe('get()', () => {
     get('/key11', { a: 'env', b: 'abc', port: 3000 }, {}, [], { KEY1: 'env' });
     get('/key11', { a: 'env', b: '3000', port: 4000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: '4000' });
     get('/key11', { a: 'env', b: '3000', port: 3000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: 'abc' });
-    get('/', { key1: 'abc', key10: { b: 123 }, key11: { b: 'abc', port: 3000 }, key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 });
-    get('/', { key1: 'abc', key10: { b: 123 }, key11: { b: 'abc', port: 3000 }, key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { xfactor: 'yes' });
+    get('/key_12', 13,{ env: 'production' });
+    get('/key_12', 42);
+    get('/key-13', { compiled: true },{ language: 'c++' });
+    get('/key-13', { compiled: false },{ language: 'js' });
+    get('/key#14/deeper', 'value');
+    get('/key#14/->deeper', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
+    get('/', { key1: 'abc', key10: { b: 123 }, key11: { b: 'abc', port: 3000 }, key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, key_12: 42, 'key#14': { deeper: 'value' }, noProto: {}, ab: 6 });
+    get('/', { key1: 'abc', key10: { b: 123 }, key11: { b: 'abc', port: 3000 }, key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, key_12: 42, 'key#14': { deeper: 'value' }, noProto: {}, ab: 6 }, { xfactor: 'yes' });
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
     get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
     get('/ab', 4, { random: { 1: 9 } });
