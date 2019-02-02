@@ -137,7 +137,7 @@ Keys can have children:
 
 ### Environment Variables
 
-In many scenarios, configuration documents may need to pull values fron environment variables. Confidence allows you to refer to environment variables using `$env` directive.
+In many scenarios, configuration documents may need to pull values from environment variables. Confidence allows you to refer to environment variables using `$env` directive.
 
 ```json
 {
