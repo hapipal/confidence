@@ -3,9 +3,9 @@
 // Load modules
 
 const ChildProcess = require('child_process');
-const Code = require('code');
+const Code = require('@hapi/code');
 const Fs = require('fs');
-const Lab = require('lab');
+const Lab = require('@hapi/lab');
 const Path = require('path');
 
 
