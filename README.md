@@ -1,4 +1,4 @@
-![confidence Logo](https://raw.githubusercontent.com/hapijs/confidence/master/images/confidence.png)
+![confidence Logo](https://raw.githubusercontent.com/hapipal/confidence/master/images/confidence.png)
 
 **Confidence** is a configuration document format, an API, and a foundation for A/B testing. The configuration format is designed to
 work with any existing JSON-based configuration, serving values based on object path (`'/a/b/c'` translates to ``a.b.c``). In addition,
@@ -6,7 +6,7 @@ work with any existing JSON-based configuration, serving values based on object 
 
 Version 4.x only supports node v8.9.0 and over. For older version of node please use version 3.x.
 
-[![Build Status](https://travis-ci.org/hapijs/confidence.svg?branch=master)](https://travis-ci.org/hapijs/confidence)
+[![Build Status](https://travis-ci.org/hapipal/confidence.svg?branch=master)](https://travis-ci.org/hapipal/confidence)
 
 Lead Maintainer: [Sunny Bhanot](https://github.com/augnin)
 

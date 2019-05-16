@@ -1,3 +1,3 @@
-Breaking changes are documented using GitHub issues, see [issues labeled "release notes"](https://github.com/hapijs/confidence/issues?q=is%3Aissue+label%3A%22release+notes%22).
+Breaking changes are documented using GitHub issues, see [issues labeled "release notes"](https://github.com/hapipal/confidence/issues?q=is%3Aissue+label%3A%22release+notes%22).
 
-If you want changes of a specific minor or patch release, you can browse the [GitHub milestones](https://github.com/hapijs/confidence/milestones?state=closed&direction=asc&sort=due_date).
+If you want changes of a specific minor or patch release, you can browse the [GitHub milestones](https://github.com/hapipal/confidence/milestones?state=closed&direction=asc&sort=due_date).
