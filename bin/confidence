@@ -4,6 +4,7 @@
 // Load modules
 
 const Fs = require('fs');
+const Path = require('path');
 const Yargs = require('yargs');
 const Alce = require('alce');
 const Confidence = require('../');
@@ -28,7 +29,7 @@ internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value
 
 internals.getConfig = function () {
 
-    const configPath = !internals.argv.c.startsWith('/') ? process.cwd() + '/' + internals.argv.c : internals.argv.c;
+    const configPath = Path.resolve(internals.argv.c);
 
     return new Promise((resolve, reject) => {
 
@@ -64,7 +65,7 @@ internals.generate = async () => {
         process.stdout.write(JSON.stringify(set, null, indentation));
     }
     catch (err) {
-        console.log('Failed loading configuration file: ' + internals.argv.c + ' (' + err.isJoi ? err.annotate() : err.message + ')');
+        process.stderr.write('Failed loading configuration file: ' + internals.argv.c + ' (' + /*err.isJoi ? err.annotate() :*/ err.message + ')');
         process.exit(1);
     }
 };
