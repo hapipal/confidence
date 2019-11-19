@@ -65,7 +65,7 @@ internals.generate = async () => {
         process.stdout.write(JSON.stringify(set, null, indentation));
     }
     catch (err) {
-        process.stderr.write('Failed loading configuration file: ' + internals.argv.c + ' (' + /*err.isJoi ? err.annotate() :*/ err.message + ')');
+        process.stderr.write('Failed loading configuration file: ' + internals.argv.c + ' (' + err + ')');
         process.exit(1);
     }
 };

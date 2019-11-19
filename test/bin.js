@@ -84,8 +84,6 @@ describe('bin', () => {
 
     before(() => {
 
-        Fs.writeFileSync(configPath + '.dpm', JSON.stringify(tree, null, 2), { encoding: 'utf8' }); // TODO: remove
-
         return new Promise((resolve) => {
 
             const stream = Fs.createWriteStream(configPath);
