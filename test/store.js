@@ -146,13 +146,14 @@ const tree = {
         ],
         $default: 6
     },
-    // TODO: name these tests better, and wrap them in something that will exclude the values for the overall '/' test.
-    dpm1a: { $filter: 'env', $base: { $value: ['a'], $replace: true }, $default: { $value: ['b'] }, dev: {} },
-    dpm1b: { $filter: 'env', $base: { $value: ['a'], $replace: true }, $default:           ['b'],   dev: {} },
-    dpm2a: { $filter: 'env', $base: { $value: ['a']                 }, $default: { $value: ['b'] }, dev: {} },
-    dpm2b: { $filter: 'env', $base: { $value: ['a']                 }, $default:           ['b'],   dev: {} },
-    dpm3:  { $filter: 'env', $base:           ['a'],                   $default: { $value: ['b'] }, dev: {} },
-    dpm4:  { $filter: 'env', $base:           ['a'],                   $default:           ['b'],   dev: {} },
+
+    arrayReplace1: { $filter: 'env', $base: { $value: ['a'], $replace: true }, $default: { $value: ['b'] }, dev: ['c'] },
+    arrayReplace2: { $filter: 'env', $base: { $value: ['a'], $replace: true }, $default:           ['b'],   dev: [] },
+    arrayMerge1:   { $filter: 'env', $base: { $value: ['a']                 }, $default: { $value: ['b'] }, dev: ['c'] },
+    arrayMerge2:   { $filter: 'env', $base: { $value: ['a']                 }, $default:           ['b'],   dev: [] },
+    arrayMerge3:   { $filter: 'env', $base:           ['a'],                   $default: { $value: ['b'] }, dev: {} },
+    arrayMerge4:   { $filter: 'env', $base:           ['a'],                   $default:           ['b'],   dev: {} },
+
     noProto: Object.create(null),
     $meta: {
         something: 'else'
@@ -203,8 +204,25 @@ describe('get()', () => {
     get('/key11', { a: 'env', b: '3000', port: 3000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: 'abc' });
 
     // TODO: adjust these tests to exclude the new values
-    get('/', { key1: 'abc', key10: { b: 123 }, key11: { b: 'abc', port: 3000 }, key2: 2, key3: { sub1: 0 }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 });
-    get('/', { key1: 'abc', key10: { b: 123 }, key11: { b: 'abc', port: 3000 }, key2: 2, key3: { sub1: 0, sub2: '' }, key4: [12, 13, 14], key5: {}, noProto: {}, ab: 6 }, { xfactor: 'yes' });
+    const slashResult = {
+        key1: 'abc',
+        key10: { b: 123 },
+        key11: { b: 'abc', port: 3000 },
+        key2: 2,
+        key3: { sub1: 0 },
+        key4: [12, 13, 14],
+        key5: {},
+        noProto: {},
+        ab: 6,
+        arrayReplace1: ['b'],
+        arrayReplace2: ['b'],
+        arrayMerge1: ['a', 'b'],
+        arrayMerge2: ['a', 'b'],
+        arrayMerge3:  ['a', 'b'],
+        arrayMerge4:  ['a', 'b']
+    };
+    get('/', slashResult);
+    get('/', Object.assign({}, slashResult, { key3: { sub1: 0, sub2: '' }, ab: 6 }), { xfactor: 'yes' });
 
     get('/ab', 2, { random: { 1: 2 } }, [{ filter: 'random.1', valueId: '[object]', filterId: 'random_ab_test' }]);
     get('/ab', { a: 5 }, { random: { 1: 3 } }, [{ filter: 'random.1', valueId: '3', filterId: 'random_ab_test' }]);
@@ -214,12 +232,19 @@ describe('get()', () => {
     get('/ab', 5, { random: { 1: 19 } });
     get('/ab', 6, { random: { 1: 29 } });
 
-    get('/dpm1a', ['b']);
-    get('/dpm1b', ['b']);
-    get('/dpm2a', ['a', 'b']);
-    get('/dpm2b', ['a', 'b']);
-    get('/dpm3',  ['a', 'b']);
-    get('/dpm4',  ['a', 'b']);
+    get('/arrayReplace1', ['b']);
+    get('/arrayReplace2', ['b']);
+    get('/arrayMerge1',   ['a', 'b']);
+    get('/arrayMerge2',   ['a', 'b']);
+    get('/arrayMerge3',   ['a', 'b']);
+    get('/arrayMerge4',   ['a', 'b']);
+
+    get('/arrayReplace1', ['c'],      { env: 'dev' });
+    get('/arrayReplace2', [],         { env: 'dev' });
+    get('/arrayMerge1',   ['a', 'c'], { env: 'dev' });
+    get('/arrayMerge2',   ['a'],      { env: 'dev' });
+    get('/arrayMerge3',   {},         { env: 'dev' });
+    get('/arrayMerge4',   {},         { env: 'dev' });
 
     it('fails on invalid key', () => {
 
@@ -327,6 +352,10 @@ describe('validate()', () => {
 
     validate('invalid id', { key: 5, $id: 4 });
     validate('empty id', { key: 5, $id: null });
+
+    validate('$replace with no $value', { $base: { $replace: true } });
+    validate('$replace with non-array $value', { $base: { $value: 'a', $replace: true } });
+    validate('$replace not under $base', { $default: { $value: ['a'], $replace: true } });
 
     it('returns null with null as the node', () => {
 
