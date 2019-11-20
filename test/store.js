@@ -203,7 +203,6 @@ describe('get()', () => {
     get('/key11', { a: 'env', b: '3000', port: 4000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: '4000' });
     get('/key11', { a: 'env', b: '3000', port: 3000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: 'abc' });
 
-    // TODO: adjust these tests to exclude the new values
     const slashResult = {
         key1: 'abc',
         key10: { b: 123 },
