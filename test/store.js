@@ -270,7 +270,7 @@ describe('validate()', () => {
     // object $filter with env
     validate('empty object filter', { key: { $filter: {} } });
     validate('object filter without env', { key: { $filter: { a: 'b' } } });
-    validate('object filter without additionl key', { key: { $filter: { $env: 'NODE_ENV', a: 'b' } } },);
+    validate('object filter without additionl key', { key: { $filter: { $env: 'NODE_ENV', a: 'b' } } });
 
     // unknown $ directives
     validate('invalid default', { key: { $default: { $b: 5 } } });
@@ -354,4 +354,3 @@ it('accepts a document object in the constructor', () => {
     new Confidence.Store(tree);
 
 });
-
