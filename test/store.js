@@ -154,6 +154,14 @@ const tree = {
     arrayMerge3:   { $filter: 'env', $base:           ['a'],                   $default: { $value: ['b'] }, dev: {} },
     arrayMerge4:   { $filter: 'env', $base:           ['a'],                   $default:           ['b'],   dev: {} },
 
+    coerceArray1: { $env: 'ARRAY', $coerce: 'array', $default : ['a'] },
+    coerceArray2: { $env: 'ARRAY', $coerce: 'array', $splitToken : '/', $default : ['a'] },
+    coerceArray3: { $env: 'ARRAY', $coerce: 'array', $splitToken : /-/i, $default : ['a'] },
+
+    coerceBoolean1: { $env: 'BOOLEAN', $coerce: 'boolean', $default : true },
+
+    coerceObject1: { $env: 'OBJECT', $coerce: 'object', $default : { a : 'b' } },
+
     noProto: Object.create(null),
     $meta: {
         something: 'else'
@@ -218,7 +226,12 @@ describe('get()', () => {
         arrayMerge1: ['a', 'b'],
         arrayMerge2: ['a', 'b'],
         arrayMerge3:  ['a', 'b'],
-        arrayMerge4:  ['a', 'b']
+        arrayMerge4:  ['a', 'b'],
+        coerceArray1: ['a'],
+        coerceArray2: ['a'],
+        coerceArray3: ['a'],
+        coerceBoolean1: true,
+        coerceObject1: { a : 'b' }
     };
     get('/', slashResult);
     get('/', Object.assign({}, slashResult, { key3: { sub1: 0, sub2: '' }, ab: 6 }), { xfactor: 'yes' });
@@ -244,6 +257,24 @@ describe('get()', () => {
     get('/arrayMerge2',   ['a'],      { env: 'dev' });
     get('/arrayMerge3',   {},         { env: 'dev' });
     get('/arrayMerge4',   {},         { env: 'dev' });
+
+    get('/coerceArray1', ['a'], {}, [], {});
+    get('/coerceArray1', ['a', 'b'], {}, [], { ARRAY : 'a,b' });
+    get('/coerceArray1', ['a'], {}, [], { ARRAY : '' });
+    get('/coerceArray2', ['a', 'b'], {}, [], { ARRAY : 'a/b' });
+    get('/coerceArray3', ['a', 'b'], {}, [], { ARRAY : 'a-b' });
+
+    get('/coerceBoolean1', true, {}, [], {});
+    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN' : 'true' });
+    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN' : 'TRUE' });
+    get('/coerceBoolean1', false, {}, [], { 'BOOLEAN' : 'false' });
+    get('/coerceBoolean1', false, {}, [], { 'BOOLEAN' : 'FALSE' });
+    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN' : 'NOT A BOOLEAN' });
+    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN' : '' });
+
+    get('/coerceObject1', { a : 'b' }, {}, [], {});
+    get('/coerceObject1', { b : 'a' }, {}, [], { 'OBJECT' : '{"b":"a"}' });
+    get('/coerceObject1', { a : 'b' }, {}, [], { 'OBJECT' : 'BROKEN JSON' });
 
     it('fails on invalid key', () => {
 

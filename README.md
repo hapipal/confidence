@@ -14,6 +14,7 @@ Lead Maintainer: [Sunny Bhanot](https://github.com/augnin)
 - [Document Format](#document-format)
     - [Basic Structure](#basic-structure)
     - [Environment Variables](#environment-variables)
+        - [Coercing value](#coercing-value)
     - [Criteria Parameters](#criteria-parameters)
     - [Filters](#filters)
     - [Ranges](#ranges)
@@ -212,6 +213,8 @@ The result is:
 }
 ```
 
+#### Coercing value
+
 `$coerce` directive allows you to coerce values to different types. In case the coercing fails, it falls back to `$default` directive, if present. Otherwise it return `undefined`.
 
 ```json
@@ -230,7 +233,7 @@ The result is:
 }
 ```
 
-With following Enviornment Variables:
+With following Environment Variables:
 
 ```sh
 MYSQL_HOST=xxx.xxx.xxx.xxx
@@ -253,7 +256,7 @@ The result is:
     }
 }
 ```
-With following Enviornment Variables:
+With following Environment Variables:
 
 ```sh
 MYSQL_HOST=xxx.xxx.xxx.xxx
@@ -277,6 +280,11 @@ The result is:
 }
 ```
 
+Value can be coerced to :
+ - `number` : applying `Number(value)`
+ - `boolean` : checking whether the value equal `true` or `false` case insensitive
+ - `array` : applying a `value.split(token)` with `token` (by default `','`) modifiable by setting the key `$splitToken` to either a string or a regex
+ - `object` : applying a `JSON.parse(value)`
 
 ### Criteria Parameters
 
