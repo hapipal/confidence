@@ -176,6 +176,7 @@ describe('bin', () => {
 
         return new Promise((resolve) => {
 
+            const errors = [];
             const confidence = ChildProcess.spawn('node', [confidencePath, '-c', configPath, '--filter.env', 'production', '-i', 'someString']);
 
             confidence.stdout.on('data', (data) => {
@@ -186,10 +187,38 @@ describe('bin', () => {
             confidence.stderr.on('data', (data) => {
 
                 expect(data.toString()).to.exist();
+                errors.push(data.toString());
             });
 
             confidence.on('close', () => {
 
+                expect(errors.join('')).to.match(/Argument check failed[\s\S]*indentation/);
+                resolve();
+            });
+        });
+    });
+
+    it('fails when configuration file cannot be found', () => {
+
+        return new Promise((resolve) => {
+
+            const errors = [];
+            const confidence = ChildProcess.spawn('node', [confidencePath, '-c', 'doesNotExist', '--filter.env', 'production', '-i', 2]);
+
+            confidence.stdout.on('data', (data) => {
+
+                expect(data.toString()).to.not.exist();
+            });
+
+            confidence.stderr.on('data', (data) => {
+
+                expect(data.toString()).to.exist();
+                errors.push(data.toString());
+            });
+
+            confidence.on('close', () => {
+
+                expect(errors.join('')).to.match(/Failed loading configuration file: doesNotExist/);
                 resolve();
             });
         });

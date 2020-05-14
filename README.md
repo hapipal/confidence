@@ -530,14 +530,23 @@ If you have values that you would like to share between various configuration ob
 {
   "$filter": "env",
   "$base": {
-      "logLocation": "/logs"
+      "logLocation": "/logs",
+      "flags": ["a", "b"],
+      "tags": {
+          "$value": ["DEBUG"],
+          "$replace": true
+      }
   },
   "production":  {
-      "logLevel": "error"
+      "logLevel": "error",
+      "flags": ["c", "d"],
+      "tags": ["INFO", "ERROR"]
   },
   "qa":  {
       "logLevel": "info",
-      "logLocation": "/qa/logs"
+      "logLocation": "/qa/logs",
+      "flags": ["e", "f"],
+      "tags": ["DEBUG"]
   },
   "staging":  {
       "logLevel": "debug"
@@ -553,7 +562,9 @@ When requesting the **key** `/` with:
 ```json
 {
 	"logLevel": "error",
-	"logLocation": "/logs"
+	"logLocation": "/logs",
+    "flags": ["a", "b", "c", "d"],
+    "tags": ["INFO", "ERROR"]
 }
 ```
 
@@ -565,11 +576,15 @@ However when requesting the **key** `/` with:
 ```json
 {
 	"logLevel": "debug",
-	"logLocation": "/logs"
+	"logLocation": "/logs",
+    "flags": ["a", "b"],
+    "tags": ["DEBUG"],
 }
 ```
 
-If the same key occurs in `$base` and the `filtered value` then value in `$base` will be overridden.
+If the same key occurs in `$base` and the `filtered value`:
+- for objects, the value in `$base` will be overridden.
+- for arrays, the arrays are merged unless the `$base` array is specified with the `$value` key and the `$replace` flag as shown above.
 
 In the above sample, when requesting the **key** `/` with:
 
