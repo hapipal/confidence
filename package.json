@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@hapi/code": "8.x.x",
-    "@hapi/lab": "20.x.x"
+    "@hapi/lab": "23.x.x"
   },
   "bin": {
     "confidence": "bin/confidence"
