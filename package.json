@@ -12,8 +12,8 @@
   ],
   "dependencies": {
     "@hapi/hoek": "9.x.x",
-    "@hapi/joi": "15.x.x",
     "alce": "1.x.x",
+    "joi": "17.x.x",
     "yargs": "13.x.x"
   },
   "devDependencies": {
