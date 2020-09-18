@@ -11,20 +11,21 @@
     "api"
   ],
   "dependencies": {
+    "@hapi/hoek": "9.x.x",
     "alce": "1.x.x",
-    "@hapi/hoek": "8.x.x",
-    "@hapi/joi": "15.x.x",
-    "yargs": "13.x.x"
+    "joi": "17.x.x",
+    "yargs": "16.x.x"
   },
   "devDependencies": {
-    "@hapi/code": "6.x.x",
-    "@hapi/lab": "20.x.x"
+    "@hapi/code": "8.x.x",
+    "@hapi/lab": "23.x.x"
   },
   "bin": {
     "confidence": "bin/confidence"
   },
   "scripts": {
     "test": "lab -t 100 -a @hapi/code -L",
+    "lint-fix": "lab -t 100 -a @hapi/code -L --lint-fix",
     "test-cov-html": "lab -r html -o coverage.html -a @hapi/code -L"
   },
   "license": "BSD-3-Clause"
