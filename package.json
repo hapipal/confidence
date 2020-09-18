@@ -17,7 +17,7 @@
     "yargs": "13.x.x"
   },
   "devDependencies": {
-    "@hapi/code": "6.x.x",
+    "@hapi/code": "8.x.x",
     "@hapi/lab": "20.x.x"
   },
   "bin": {
