@@ -18,13 +18,15 @@
   },
   "devDependencies": {
     "@hapi/code": "8.x.x",
-    "@hapi/lab": "23.x.x"
+    "@hapi/lab": "23.x.x",
+    "coveralls": "3.x.x"
   },
   "bin": {
     "confidence": "bin/confidence"
   },
   "scripts": {
     "test": "lab -t 100 -a @hapi/code -L",
+    "coveralls": "lab -r lcov | coveralls",
     "lint-fix": "lab -t 100 -a @hapi/code -L --lint-fix",
     "test-cov-html": "lab -r html -o coverage.html -a @hapi/code -L"
   },

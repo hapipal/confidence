@@ -9,3 +9,5 @@ sudo: false
 
 install:
   - "npm install"
+
+after_script: "npm run coveralls"

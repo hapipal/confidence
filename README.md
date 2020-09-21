@@ -4,9 +4,9 @@
 work with any existing JSON-based configuration, serving values based on object path (`'/a/b/c'` translates to ``a.b.c``). In addition,
 **confidence** defines special $-prefixed keys used to filter values for a given criteria.
 
-Version 4.x only supports node v8.9.0 and over. For older version of node please use version 3.x.
+Version 5.x only supports node v12 and over. For older version of node please use version 4.x.
 
-[![Build Status](https://travis-ci.org/hapipal/confidence.svg?branch=master)](https://travis-ci.org/hapipal/confidence)
+[![Build Status](https://travis-ci.org/hapipal/confidence.svg?branch=master)](https://travis-ci.org/hapipal/confidence) [![Coverage Status](https://coveralls.io/repos/hapipal/confidence/badge.svg?branch=master&service=github)](https://coveralls.io/github/hapipal/confidence?branch=master)
 
 Lead Maintainer: [Sunny Bhanot](https://github.com/augnin)
 
