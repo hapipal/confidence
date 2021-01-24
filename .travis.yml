@@ -1,13 +1,4 @@
-language: node_js
-
-node_js:
-  - "12"
-  - "14"
-  - "node"
-
-sudo: false
+import: hapipal/ci-config-travis:node_js.yml@master
 
 install:
   - "npm install"
-
-after_script: "npm run coveralls"
