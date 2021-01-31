@@ -1,14 +1,14 @@
 {
-  "name": "confidence",
-  "description": "Configuration API",
+  "name": "@hapipal/confidence",
+  "description": "Dynamic, declarative configurations",
   "version": "5.0.0",
   "repository": "git://github.com/hapipal/confidence",
   "main": "lib/index.js",
   "keywords": [
     "hapi",
-    "plugin",
     "configuration",
-    "api"
+    "api",
+    "a/b"
   ],
   "dependencies": {
     "@hapi/hoek": "9.x.x",

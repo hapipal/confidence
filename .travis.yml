@@ -1,4 +1,1 @@
 import: hapipal/ci-config-travis:node_js.yml@master
-
-install:
-  - "npm install"
