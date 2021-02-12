@@ -1,73 +1,59 @@
 #!/usr/bin/env node
 'use strict';
 
-// Load modules
-
-const Fs = require('fs');
-const Path = require('path');
-const Yargs = require('yargs');
-const Alce = require('alce');
+const Bossy = require('@hapi/bossy');
 const Confidence = require('../');
-
-
-// Declare internals
 
 const internals = {};
 
-internals.checkArguments = function (argv) {
-    return typeof argv.indentation === 'number';
-};
+internals.run = async () => {
 
-internals.argv = Yargs.usage('Usage: $0 -c config.json [--filter.criterion=value]')
-                    .demand(['c'])
-                    .option('i', {
-                        alias: 'indentation',
-                        default: 4
-                    })
-                    .check(internals.checkArguments)
-                    .argv;
+    const args = Bossy.parse(internals.definition);
 
-internals.getConfig = function () {
+    if (args instanceof Error) {
+        console.error(args.message);
+        return process.exit(1);
+    }
 
-    const configPath = Path.resolve(internals.argv.c);
-
-    return new Promise((resolve, reject) => {
-
-        Fs.readFile(configPath, (err, data) => {
-
-            if (err) {
-                return reject(err);
-            }
-            try {
-                const config = Alce.parse(data);
-                return resolve(config);
-            }
-            catch (err) {
-                return reject(err);
-            }
-        });
-    });
-};
-
-
-internals.generate = async () => {
+    if (args.help) {
+        console.log(Bossy.usage(internals.definition, 'confidence -c config.json [--filter.criterion=value]'));
+        return process.exit(0);
+    }
 
     try {
-        const config = await internals.getConfig();
-        const store = new Confidence.Store(config);
-        const set = store.get('/', internals.argv.filter);
-        const indentation = internals.argv.indentation;
-    
-        if (!set) {
-            process.stderr.write('Failed to generate document');
-        }
-    
-        process.stdout.write(JSON.stringify(set, null, indentation));
+        const config = require(args.config);
+        const store = config instanceof Confidence.Store ? config : new Confidence.Store(config);
+        const result = store.get('/', args.filter);
+        process.stdout.write(JSON.stringify(result, null, args.indentation));
     }
     catch (err) {
-        process.stderr.write('Failed loading configuration file: ' + internals.argv.c + ' (' + err + ')');
+        console.error('Failed loading configuration file: ' + args.config + ' (' + err + ')');
         process.exit(1);
     }
 };
 
-internals.generate();
+
+internals.definition = {
+    h: {
+        type: 'help',
+        alias: 'help'
+    },
+    c: {
+        type: 'string',
+        require: true,
+        alias: 'config'
+    },
+    i: {
+        type: 'number',
+        alias: 'indentation',
+        default: 4
+    },
+    filter: {
+        type: 'json',
+        parsePrimitives: true,
+        default: {}
+    }
+};
+
+
+internals.run();

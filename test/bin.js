@@ -134,7 +134,7 @@ describe('bin', () => {
 
         expect(code).to.equal(1);
         expect(stdout).to.equal('');
-        expect(stderr).to.match(/Argument check failed[\s\S]*indentation/);
+        expect(stderr).to.match(/Invalid value \(non-number\) for option: i/);
     });
 
     it('fails when configuration file cannot be found', async () => {
