@@ -228,6 +228,7 @@ describe('get()', () => {
     get('/coerceObject1', { a: 'b' }, {}, []);
     get('/coerceObject1', { b: 'a' }, { obj: '{"b":"a"}' }, []);
     get('/coerceObject1', { a: 'b' }, { obj: 'BROKEN JSON' }, []);
+    get('/coerceObject1', { a: 'b' }, { obj: '{"b":"a","__proto__":"x"}' }, []);
 
     it('fails on invalid key', () => {
 
