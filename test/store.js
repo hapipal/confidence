@@ -14,22 +14,6 @@ const internals = {};
 const { describe, it } = exports.lab = Lab.script();
 const expect = Code.expect;
 
-internals.replaceEnv = (obj) => {
-
-    const replaced = {};
-    for (const key in obj) {
-        if (obj[key]) {
-            replaced[key] = process.env[key] ? process.env[key] : null;
-            process.env[key] = obj[key];
-        }
-        else {
-            delete process.env[key];
-        }
-    }
-
-    return replaced;
-};
-
 const tree = {
     // Fork
     key1: 'abc',
@@ -67,19 +51,6 @@ const tree = {
     },
     key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
     key5: {},
-    key6: {
-        $filter: { $env: 'NODE_ENV' },
-        production: {
-            animal: 'chicken',
-            color: 'orange'
-        },
-        staging: {
-            animal: 'cow'
-        },
-        $base: {
-            color: 'red'
-        }
-    },
     key7: {
         $filter: 'env',
         production: [
@@ -115,22 +86,11 @@ const tree = {
             $param: 'a.c',
             $default: 123,
             $meta: 'param with default'
-        }
-    },
-    key11: {
-        a: {
-            $env: 'KEY1',
-            $meta: 'env without default'
         },
-        b: {
-            $env: 'KEY2',
-            $default: 'abc',
-            $meta: 'env with default'
-        },
-        port: {
-            $env: 'PORT',
+        c: {
+            $param: 'a.d',
             $coerce: 'number',
-            $default: 3000
+            $meta: 'param with coercion'
         }
     },
     ab: {
@@ -153,13 +113,13 @@ const tree = {
     arrayMerge2: { $filter: 'env', $base: { $value: ['a']                   }, $default: ['b'],   dev: [] },
     arrayMerge3: { $filter: 'env', $base: ['a'],                               $default: { $value: ['b'] }, dev: {} },
     arrayMerge4: { $filter: 'env', $base: ['a'],                               $default: ['b'],   dev: {} },
-    coerceArray1: { $env: 'ARRAY', $coerce: 'array', $default: ['a'] },
-    coerceArray2: { $env: 'ARRAY', $coerce: 'array', $splitToken: '/', $default: ['a'] },
-    coerceArray3: { $env: 'ARRAY', $coerce: 'array', $splitToken: /-/i, $default: ['a'] },
+    coerceArray1: { $param: 'arr', $coerce: 'array', $default: ['a'] },
+    coerceArray2: { $param: 'arr', $coerce: 'array', $splitToken: '/', $default: ['a'] },
+    coerceArray3: { $param: 'arr', $coerce: 'array', $splitToken: /-/i, $default: ['a'] },
 
-    coerceBoolean1: { $env: 'BOOLEAN', $coerce: 'boolean', $default: true },
+    coerceBoolean1: { $param: 'bool', $coerce: 'boolean', $default: true },
 
-    coerceObject1: { $env: 'OBJECT', $coerce: 'object', $default: { a: 'b' } },
+    coerceObject1: { $param: 'obj', $coerce: 'object', $default: { a: 'b' } },
 
     noProto: Object.create(null),
     $meta: {
@@ -172,14 +132,12 @@ describe('get()', () => {
     const store = new Confidence.Store();
     store.load(tree);
 
-    const get = function (key, result, criteria, applied, env) {
+    const get = function (key, result, criteria, applied) {
 
         it('gets value for ' + key + (criteria ? ' with criteria ' + JSON.stringify(criteria) : ''), () => {
 
-            const originalEnv = internals.replaceEnv(env || {});
             const resultApplied = [];
             const value = store.get(key, criteria, applied ? resultApplied : null);
-            internals.replaceEnv(originalEnv);
 
             expect(value).to.equal(result);
             if (applied) {
@@ -197,8 +155,6 @@ describe('get()', () => {
     get('/key2/deeper', undefined, { env: 'qa' });
     get('/key2/deeper', undefined);
     get('/key5', {});
-    get('/key6', { animal: 'chicken', color: 'orange' }, {}, [{ filter: { $env: 'NODE_ENV' }, valueId: 'production' }], { NODE_ENV: 'production' });
-    get('/key6', { color: 'red', animal: 'cow' }, {}, [{ filter: { $env: 'NODE_ENV' }, valueId: 'staging' }], { NODE_ENV: 'staging' });
     get('/key7', [{ animal: 'cat' },{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
     get('/key7', [{ animal: 'cat' },{ animal: 'cow' }], { env: 'staging' });
     get('/key8', [{ animal: 'chicken' },{ animal: 'dog' }], { env: 'production' });
@@ -206,14 +162,12 @@ describe('get()', () => {
     get('/key10', { b: 123 });
     get('/key10', { a: 'abc', b: 789 }, { a: { b: 'abc', c: 789 } });
     get('/key10', { a: 'abc', b: 123 }, { a: { b: 'abc', c: null } });
-    get('/key11', { a: 'env', b: 'abc', port: 3000 }, {}, [], { KEY1: 'env' });
-    get('/key11', { a: 'env', b: '3000', port: 4000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: '4000' });
-    get('/key11', { a: 'env', b: '3000', port: 3000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: 'abc' });
+    get('/key10', { b: 123, c: 3000 }, { a: { d: '3000' } });
+    get('/key10', { b: 123 }, { a: { d: 'abc' } });
 
     const slashResult = {
         key1: 'abc',
         key10: { b: 123 },
-        key11: { b: 'abc', port: 3000 },
         key2: 2,
         key3: { sub1: 0 },
         key4: [12, 13, 14],
@@ -258,22 +212,22 @@ describe('get()', () => {
     get('/arrayMerge4',   {},         { env: 'dev' });
 
     get('/coerceArray1', ['a'], {}, [], {});
-    get('/coerceArray1', ['a', 'b'], {}, [], { ARRAY: 'a,b' });
-    get('/coerceArray1', ['a'], {}, [], { ARRAY: '' });
-    get('/coerceArray2', ['a', 'b'], {}, [], { ARRAY: 'a/b' });
-    get('/coerceArray3', ['a', 'b'], {}, [], { ARRAY: 'a-b' });
+    get('/coerceArray1', ['a', 'b'], { arr: 'a,b' }, []);
+    get('/coerceArray1', ['a'], { arr: '' }, []);
+    get('/coerceArray2', ['a', 'b'], { arr: 'a/b' }, []);
+    get('/coerceArray3', ['a', 'b'], { arr: 'a-b' }, []);
 
     get('/coerceBoolean1', true, {}, [], {});
-    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN': 'true' });
-    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN': 'TRUE' });
-    get('/coerceBoolean1', false, {}, [], { 'BOOLEAN': 'false' });
-    get('/coerceBoolean1', false, {}, [], { 'BOOLEAN': 'FALSE' });
-    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN': 'NOT A BOOLEAN' });
-    get('/coerceBoolean1', true, {}, [], { 'BOOLEAN': '' });
+    get('/coerceBoolean1', true, { bool: 'true' }, []);
+    get('/coerceBoolean1', true, { bool: 'TRUE' }, []);
+    get('/coerceBoolean1', false, { bool: 'false' }, []);
+    get('/coerceBoolean1', false, { bool: 'FALSE'}, []);
+    get('/coerceBoolean1', true, { bool: 'NOT A BOOLEAN' }, []);
+    get('/coerceBoolean1', true, { bool: '' }, []);
 
-    get('/coerceObject1', { a: 'b' }, {}, [], {});
-    get('/coerceObject1', { b: 'a' }, {}, [], { 'OBJECT': '{"b":"a"}' });
-    get('/coerceObject1', { a: 'b' }, {}, [], { 'OBJECT': 'BROKEN JSON' });
+    get('/coerceObject1', { a: 'b' }, {}, []);
+    get('/coerceObject1', { b: 'a' }, { obj: '{"b":"a"}' }, []);
+    get('/coerceObject1', { a: 'b' }, { obj: 'BROKEN JSON' }, []);
 
     it('fails on invalid key', () => {
 
@@ -298,7 +252,6 @@ describe('meta()', () => {
     validate('returns nested meta', '/key3/sub1', 'something');
     validate('returns undefined for missing meta', '/key1', undefined);
     validate('return param meta', '/key10/a', 'param without default');
-    validate('return env meta', '/key11/b', 'env with default');
 });
 
 describe('load()', () => {
@@ -341,7 +294,6 @@ describe('validate()', () => {
     // object $filter with env
     validate('empty object filter', { key: { $filter: {} } });
     validate('object filter without env', { key: { $filter: { a: 'b' } } });
-    validate('object filter without additionl key', { key: { $filter: { $env: 'NODE_ENV', a: 'b' } } });
 
     // unknown $ directives
     validate('invalid default', { key: { $default: { $b: 5 } } });
@@ -354,18 +306,13 @@ describe('validate()', () => {
     validate('value with default', { key: { $value: 1, $default: '1' } });
     validate('value with range', { key: { $value: 1, $range: [{ limit: 10, value: 4 }] } });
     validate('value with param', { key: { $value: 1, $param: 'a.b' } });
-    validate('value with env', { key: { $value: 1, $env: 'NODE_ENV' } });
     validate('value with non-directive keys', { key: { $value: 1, a: 1 } });
     validate('param with filter', { key: { $param: 'a.b', $filter: 'a' } });
     validate('param with range', { key: { $param: 'a.b', $range: [{ limit: 10, value: 4 }] } });
-    validate('param with env', { key: { $param: 'a.b', $env: 'NODE_ENV' } });
     validate('param with non-directive keys', { key: { $param: 'a.b', a: 1 } });
-    validate('env with filter', { key: { $env: 'NODE_ENV', $filter: 'a' } });
-    validate('env with $range', { key: { $env: 'NODE_ENV', $range: [{ limit: 10, value: 4 }] } });
-    validate('env with non-directive keys', { key: { $env: 'NODE_ENV', a: 1 } });
     validate('filter without any value', { key: { $filter: '1' } });
     validate('filter with only default', { key: { $filter: 'a', $default: 1 } });
-    validate('default value without a filter or env or param', { key: { $default: 1 } });
+    validate('default value without a filter or param', { key: { $default: 1 } });
 
     // $range
     validate('non-array range', { key: { $filter: 'a', $range: {}, $default: 1 } });
