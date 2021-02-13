@@ -15,9 +15,8 @@ Dynamic, declarative configurations
         - [`store.bind(criteria)`](#storebindcriteria)
 - [Document Format](#document-format)
     - [Basic Structure](#basic-structure)
-    - [Environment Variables](#environment-variables)
-        - [Coercing value](#coercing-value)
     - [Criteria Parameters](#criteria-parameters)
+        - [Coercing value](#coercing-value)
     - [Filters](#filters)
     - [Ranges](#ranges)
     - [Metadata](#metadata)
@@ -127,156 +126,6 @@ Keys can have children:
 }
 ```
 
-### Environment Variables
-
-In many scenarios, configuration documents may need to pull values from environment variables. Confidence allows you to refer to environment variables using `$env` directive.
-
-```json
-{
-    "mysql": {
-        "host": { "$env" : "MYSQL_HOST" },
-        "port": { "$env" : "MYSQL_PORT" },
-        "user": { "$env" : "MYSQL_USER" },
-        "password": { "$env" : "MYSQL_PASSWORD" },
-        "database": { "$env" : "MYSQL_DATABASE" },
-    }
-}
-```
-
-With following Enviornment Variables:
-
-```sh
-MYSQL_HOST=xxx.xxx.xxx.xxx
-MYSQL_PORT=3306
-MYSQL_USER=user1
-MYSQL_PASSWORD=some_password
-MYSQL_DATABASE=live_db
-```
-
-The result is:
-
-```json
-{
-    "mysql": {
-        "host": "xxx.xxx.xxx.xxx",
-        "port": "3306",
-        "user": "user1",
-        "password": "some_password",
-        "database": "live_db"
-    }
-}
-```
-
-`$default` directive allows to fallback to default values in case an environment variable is not set.
-
-```json
-{
-    "mysql": {
-        "host": { "$env" : "MYSQL_HOST" },
-        "port": { "$env" : "MYSQL_PORT", "$default": 3306 },
-        "user": { "$env" : "MYSQL_USER" },
-        "password": { "$env" : "MYSQL_PASSWORD" },
-        "database": { "$env" : "MYSQL_DATABASE" },
-    }
-}
-```
-
-With following Enviornment Variables:
-
-```sh
-MYSQL_HOST=xxx.xxx.xxx.xxx
-MYSQL_USER=user1
-MYSQL_PASSWORD=some_password
-MYSQL_DATABASE=live_db
-```
-
-The result is:
-
-```json
-{
-    "mysql": {
-        "host": "xxx.xxx.xxx.xxx",
-        "port": 3306,
-        "user": "user1",
-        "password": "some_password",
-        "database": "live_db"
-    }
-}
-```
-
-#### Coercing value
-
-`$coerce` directive allows you to coerce values to different types. In case the coercing fails, it falls back to `$default` directive, if present. Otherwise it return `undefined`.
-
-```json
-{
-    "mysql": {
-        "host": { "$env" : "MYSQL_HOST" },
-        "port": {
-            "$env" : "MYSQL_PORT",
-            "$coerce": "number",
-            "$default": 3306
-        },
-        "user": { "$env" : "MYSQL_USER" },
-        "password": { "$env" : "MYSQL_PASSWORD" },
-        "database": { "$env" : "MYSQL_DATABASE" },
-    }
-}
-```
-
-With following Environment Variables:
-
-```sh
-MYSQL_HOST=xxx.xxx.xxx.xxx
-MYSQL_PORT=3316
-MYSQL_USER=user1
-MYSQL_PASSWORD=some_password
-MYSQL_DATABASE=live_db
-```
-
-The result is:
-
-```json
-{
-    "mysql": {
-        "host": "xxx.xxx.xxx.xxx",
-        "port": 3316,
-        "user": "user1",
-        "password": "some_password",
-        "database": "live_db"
-    }
-}
-```
-With following Environment Variables:
-
-```sh
-MYSQL_HOST=xxx.xxx.xxx.xxx
-MYSQL_PORT=unknown
-MYSQL_USER=user1
-MYSQL_PASSWORD=some_password
-MYSQL_DATABASE=live_db
-```
-
-The result is:
-
-```json
-{
-    "mysql": {
-        "host": "xxx.xxx.xxx.xxx",
-        "port": 3306,
-        "user": "user1",
-        "password": "some_password",
-        "database": "live_db"
-    }
-}
-```
-
-Value can be coerced to :
- - `number` : applying `Number(value)`
- - `boolean` : checking whether the value equal `true` or `false` case insensitive
- - `array` : applying a `value.split(token)` with `token` (by default `','`) modifiable by setting the key `$splitToken` to either a string or a regex
- - `object` : applying a `JSON.parse(value)`
-
 ### Criteria Parameters
 
 In many scenarios, configuration documents may need to pull values fron `criteria`. Confidence allows you to refer to `criteria` using `$param` directive.
@@ -315,7 +164,7 @@ The result is:
 {
     "mysql": {
         "host": "xxx.xxx.xxx.xxx",
-        "port": "3306",
+        "port": 3306,
         "user": "user1",
         "password": "some_password",
         "database": "live_db"
@@ -368,6 +217,62 @@ The result is:
 }
 ```
 
+#### Coercing value
+
+`$coerce` directive allows you to coerce values to different types. In case the coercing fails, it falls back to `$default` directive, if present. Otherwise it returns `undefined`.
+
+```json
+{
+    "port": {
+        "$param" : "service.port",
+        "$coerce": "number",
+        "$default": 3000
+    }
+}
+```
+
+With following `criteria`:
+
+```json
+{
+    "service": {
+        "port": "4000"
+    }
+}
+```
+
+The result is:
+
+```json
+{
+    "port": 4000
+}
+```
+
+With following `criteria`:
+
+```json
+{
+    "service": {
+        "port": "unknown"
+    }
+}
+```
+
+The result is:
+
+```json
+{
+    "port": 3000
+}
+```
+
+Value can be coerced to:
+ - `number` : applying `Number(value)`.
+ - `boolean` : checking whether the value equal `true` or `false` case insensitive.
+ - `array` : applying a `value.split(token)` with `token` (by default `','`) modifiable by setting the key `$splitToken` to either a string or a regex.  Empty strings are coerced to `[]`.
+ - `object` : applying JSON parsing to the string.
+
 
 ### Filters
 
@@ -408,34 +313,6 @@ Filters can have a default value which will be used if the provided criteria set
         "$filter": "system.env",
         "production": 1,
         "$default": 2
-    }
-}
-```
-Filters can also refer to environment variables using `$env` directive.
-
-```json
-{
-    "key1": "abc",
-    "key2": {
-        "$filter": { "$env": "NODE_ENV" },
-        "production": {
-            "host": { "$env" : "MYSQL_HOST" },
-            "port": {
-                "$env" : "MYSQL_PORT",
-                "$coerce": "number",
-                "$default": 3306
-            },
-            "user": { "$env" : "MYSQL_USER" },
-            "password": { "$env" : "MYSQL_PASSWORD" },
-            "database": { "$env" : "MYSQL_DATABASE" },
-        },
-        "$default": {
-            "host": "127.0.0.1",
-            "port": 3306,
-            "user": "dev",
-            "password": "password",
-            "database": "dev_db"
-        }
     }
 }
 ```
