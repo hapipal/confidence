@@ -213,7 +213,7 @@ describe('get()', () => {
 
     get('/coerceArray1', ['a'], {}, [], {});
     get('/coerceArray1', ['a', 'b'], { arr: 'a,b' }, []);
-    get('/coerceArray1', ['a'], { arr: '' }, []);
+    get('/coerceArray1', [], { arr: '' }, []);
     get('/coerceArray2', ['a', 'b'], { arr: 'a/b' }, []);
     get('/coerceArray3', ['a', 'b'], { arr: 'a-b' }, []);
 
@@ -221,7 +221,7 @@ describe('get()', () => {
     get('/coerceBoolean1', true, { bool: 'true' }, []);
     get('/coerceBoolean1', true, { bool: 'TRUE' }, []);
     get('/coerceBoolean1', false, { bool: 'false' }, []);
-    get('/coerceBoolean1', false, { bool: 'FALSE'}, []);
+    get('/coerceBoolean1', false, { bool: 'FALSE' }, []);
     get('/coerceBoolean1', true, { bool: 'NOT A BOOLEAN' }, []);
     get('/coerceBoolean1', true, { bool: '' }, []);
 
