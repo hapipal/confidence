@@ -12,6 +12,7 @@ Dynamic, declarative configurations
         - [`store.load(document)`](#storeloaddocument)
         - [`store.get(key, [criteria])`](#storegetkey-criteria)
         - [`store.meta(key, [criteria])`](#storemetakey-criteria)
+        - [`store.bind(criteria)`](#storebindcriteria)
 - [Document Format](#document-format)
     - [Basic Structure](#basic-structure)
     - [Environment Variables](#environment-variables)
@@ -87,6 +88,15 @@ Returns the metadata found after applying the criteria. If the key is invalid or
 
 ```javascript
 const value = store.meta('/c', { size: 'big' });
+```
+
+#### `store.bind([criteria])`
+
+Binds criteria directly to the store, effectively setting it as default criteria.  When `criteria` is passed to [`store.get()`](#storegetkey-criteria) or [`store.meta()`](#storemetakey-criteria), it is merged into the bound criteria.  When `store.bind()` is called multiple times, the criteria from each call are merged together.  Calling `store.bind()` without an argument will reset the bound criteria.
+
+```javascript
+store.bind({ size: 'big' });
+const value = store.get('/c');
 ```
 
 ## Document Format

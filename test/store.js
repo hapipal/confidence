@@ -405,6 +405,72 @@ describe('validate()', () => {
     });
 });
 
+describe('bind()', () => {
+
+    it('binds criteria for get()', () => {
+
+        const store = new Confidence.Store();
+        store.load(tree).bind({
+            a: { b: 1, c: 2 }
+        });
+
+        expect(store.get('/key10')).to.equal({ a: 1, b: 2 });
+        expect(store.get('/key10', { a: { b: 3 } })).to.equal({ a: 3, b: 2 });
+    });
+
+    it('binds criteria for meta()', () => {
+
+        const store = new Confidence.Store({
+            m: {
+                $filter: 'a.b',
+                x: {
+                    $meta: 'got x'
+                },
+                $default: {
+                    $meta: 'got default m'
+                }
+            },
+            n: {
+                $filter: 'a.c',
+                y: {
+                    $meta: 'got y'
+                },
+                $default: {
+                    $meta: 'got default n'
+                }
+            }
+        });
+
+        store.bind({
+            a: { b: 'x', c: 'z' }
+        });
+
+        expect(store.meta('/m')).to.equal('got x');
+        expect(store.meta('/n')).to.equal('got default n');
+        expect(store.meta('/m', { a: { b: 'z' } })).to.equal('got default m');
+        expect(store.meta('/n', { a: { c: 'y' } })).to.equal('got y');
+    });
+
+    it('accumulates bindings', () => {
+
+        const store = new Confidence.Store(tree);
+        store.bind({ a: { b: 1 } });
+        store.bind({ a: { c: 2 } });
+
+        expect(store.get('/key10')).to.equal({ a: 1, b: 2 });
+        expect(store.get('/key10', { a: { b: 3 } })).to.equal({ a: 3, b: 2 });
+    });
+
+    it('resets bindings when no arguments are passed', () => {
+
+        const store = new Confidence.Store(tree);
+        store.bind({ a: { b: 1, c: 2 } });
+        store.bind();
+
+        expect(store.get('/key10')).to.equal({ b: 123 });
+    });
+});
+
 describe('_logApplied', () => {
 
     it('adds the filter to the list of applied filters if node or criteria is not defined ', () => {
