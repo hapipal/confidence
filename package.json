@@ -11,6 +11,7 @@
     "api"
   ],
   "dependencies": {
+    "@hapi/bourne": "2.x.x",
     "@hapi/hoek": "9.x.x",
     "alce": "1.x.x",
     "joi": "17.x.x",
