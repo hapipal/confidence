@@ -12,12 +12,13 @@ internals.run = async () => {
 
     if (args instanceof Error) {
         console.error(args.message);
-        return process.exit(1);
+        process.exitCode = 1;
+        return;
     }
 
     if (args.help) {
         console.log(Bossy.usage(internals.definition, 'confidence -c config.json [--filter.criterion=value]'));
-        return process.exit(0);
+        return;
     }
 
     try {
@@ -28,7 +29,7 @@ internals.run = async () => {
     }
     catch (err) {
         console.error('Failed loading configuration file: ' + args.config + ' (' + err + ')');
-        process.exit(1);
+        process.exitCode = 1;
     }
 };
 
