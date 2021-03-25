@@ -18,7 +18,7 @@ internals.replaceEnv = (obj) => {
 
     const replaced = {};
     for (const key in obj) {
-        if (obj[key]) {
+        if (key in obj && obj[key] !== null) {
             replaced[key] = process.env[key] ? process.env[key] : null;
             process.env[key] = obj[key];
         }
@@ -259,7 +259,7 @@ describe('get()', () => {
 
     get('/coerceArray1', ['a'], {}, [], {});
     get('/coerceArray1', ['a', 'b'], {}, [], { ARRAY: 'a,b' });
-    get('/coerceArray1', ['a'], {}, [], { ARRAY: '' });
+    get('/coerceArray1', [], {}, [], { ARRAY: '' });
     get('/coerceArray2', ['a', 'b'], {}, [], { ARRAY: 'a/b' });
     get('/coerceArray3', ['a', 'b'], {}, [], { ARRAY: 'a-b' });
 
@@ -274,6 +274,7 @@ describe('get()', () => {
     get('/coerceObject1', { a: 'b' }, {}, [], {});
     get('/coerceObject1', { b: 'a' }, {}, [], { 'OBJECT': '{"b":"a"}' });
     get('/coerceObject1', { a: 'b' }, {}, [], { 'OBJECT': 'BROKEN JSON' });
+    get('/coerceObject1', { a: 'b' }, { obj: '{"b":"a","__proto__":"x"}' }, []);
 
     it('fails on invalid key', () => {
 
