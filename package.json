@@ -1,7 +1,7 @@
 {
   "name": "confidence",
   "description": "Configuration API",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "repository": "git://github.com/hapipal/confidence",
   "main": "lib/index.js",
   "keywords": [
