@@ -1,25 +1,24 @@
 {
-  "name": "confidence",
-  "description": "Configuration API",
-  "version": "5.0.1",
+  "name": "@hapipal/confidence",
+  "description": "Dynamic, declarative configurations",
+  "version": "6.0.0",
   "repository": "git://github.com/hapipal/confidence",
   "main": "lib/index.js",
   "keywords": [
     "hapi",
-    "plugin",
     "configuration",
-    "api"
+    "api",
+    "a/b"
   ],
   "dependencies": {
+    "@hapi/bossy": ">=5.1.0 <6",
     "@hapi/bourne": "2.x.x",
     "@hapi/hoek": "9.x.x",
-    "alce": "1.x.x",
-    "joi": "17.x.x",
-    "yargs": "16.x.x"
+    "joi": "17.x.x"
   },
   "devDependencies": {
     "@hapi/code": "8.x.x",
-    "@hapi/lab": "23.x.x",
+    "@hapi/lab": "24.x.x",
     "coveralls": "3.x.x"
   },
   "bin": {
