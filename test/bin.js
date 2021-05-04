@@ -58,6 +58,19 @@ describe('bin', () => {
         },
         key4: [12, 13, { $filter: 'none', x: 10, $default: 14 }],
         key5: {},
+        key6: [
+            {
+                // Filter
+                $filter: 'env',
+                production: 'chicken'
+            },
+            {
+                // Filter
+                $filter: 'env',
+                staging: 'cow'
+            },
+            15
+        ],
         ab: {
             // Range
             $filter: 'random.1',
@@ -102,7 +115,7 @@ describe('bin', () => {
 
         const [code, stdout, stderr] = await execute(['-c', configPath]);
 
-        const obj = JSON.parse('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+        const obj = JSON.parse('{"key1":"abc","key2":2,"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"key6":[15],"ab":6}');
         expect(code).to.equal(0);
         expect(stdout).to.equal(JSON.stringify(obj, null, 4));
         expect(stderr).to.equal('');
@@ -112,7 +125,7 @@ describe('bin', () => {
 
         const [code, stdout, stderr] = await execute(['-c', configPath, '--filter.env', 'production']);
 
-        const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+        const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"key6":["chicken",15],"ab":6}');
         expect(code).to.equal(0);
         expect(stdout).to.equal(JSON.stringify(obj, null, 4));
         expect(stderr).to.equal('');
@@ -122,7 +135,7 @@ describe('bin', () => {
 
         const [code, stdout, stderr] = await execute(['-c', configPath, '--filter.env', 'production', '-i', 2]);
 
-        const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"ab":6}');
+        const obj = JSON.parse('{"key1":"abc","key2":{"deeper":"value"},"key3":{"sub1":0},"key4":[12,13,14],"key5":{},"key6":["chicken",15],"ab":6}');
         expect(code).to.equal(0);
         expect(stdout).to.equal(JSON.stringify(obj, null, 2));
         expect(stderr).to.equal('');
