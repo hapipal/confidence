@@ -133,6 +133,13 @@ const tree = {
             $default: 3000
         }
     },
+    key12: {
+        zero: {
+            $env: 'ZERO',
+            $coerce: 'number',
+            $default: 0
+        }
+    },
     ab: {
         // Range
         $filter: 'random.1',
@@ -209,11 +216,14 @@ describe('get()', () => {
     get('/key11', { a: 'env', b: 'abc', port: 3000 }, {}, [], { KEY1: 'env' });
     get('/key11', { a: 'env', b: '3000', port: 4000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: '4000' });
     get('/key11', { a: 'env', b: '3000', port: 3000 }, {}, [], { KEY1: 'env', KEY2: 3000, PORT: 'abc' });
+    get('/key12', { zero: 0 }, {}, [], {});
+    get('/key12', { zero: 1000 }, {}, [], { ZERO: '1000' });
 
     const slashResult = {
         key1: 'abc',
         key10: { b: 123 },
         key11: { b: 'abc', port: 3000 },
+        key12: { zero: 0 },
         key2: 2,
         key3: { sub1: 0 },
         key4: [12, 13, 14],
