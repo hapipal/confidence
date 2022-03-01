@@ -4,6 +4,7 @@
   "version": "6.0.2",
   "repository": "git://github.com/hapipal/confidence",
   "main": "lib/index.js",
+  "types": "types.d.ts",
   "keywords": [
     "hapi",
     "configuration",
@@ -19,7 +20,8 @@
   "devDependencies": {
     "@hapi/code": "8.x.x",
     "@hapi/lab": "24.x.x",
-    "coveralls": "3.x.x"
+    "coveralls": "3.x.x",
+    "@hapipal/types-confidence": ">=0.0.1-alpha.0"
   },
   "bin": {
     "confidence": "bin/confidence"
