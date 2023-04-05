@@ -4,6 +4,9 @@
   "version": "6.0.2",
   "repository": "git://github.com/hapipal/confidence",
   "main": "lib/index.js",
+  "engines": {
+    "node": ">=16"
+  },
   "keywords": [
     "hapi",
     "configuration",
@@ -11,14 +14,14 @@
     "a/b"
   ],
   "dependencies": {
-    "@hapi/bossy": ">=5.1.0 <6",
-    "@hapi/bourne": "2.x.x",
-    "@hapi/hoek": "9.x.x",
+    "@hapi/bossy": "6.x",
+    "@hapi/bourne": "3.x.x",
+    "@hapi/hoek": "11.x.x",
     "joi": "17.x.x"
   },
   "devDependencies": {
-    "@hapi/code": "8.x.x",
-    "@hapi/lab": "24.x.x",
+    "@hapi/code": "9.x.x",
+    "@hapi/lab": "25.x.x",
     "coveralls": "3.x.x"
   },
   "bin": {
